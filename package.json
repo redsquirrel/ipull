@@ -4,5 +4,7 @@
   , "dependencies": {
       "express": "2.3.12"
     , "jade": ">= 0.0.1"
+    , "redis":   "0.6.0"
+    , "hiredis": "0.1.12"
   }
 }
