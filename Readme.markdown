@@ -13,6 +13,11 @@ A less extreme scenario would include a more traditional teacher or facilitator 
 
 This will be a non-profit entity. The codebase for iPull will be freely available via open source.
 
+I'm open to ideas, feedback, and collaboration.
+
+Dave Hoover, @redsquirrel
+dave.hoover@gmail.com
+
 [0]: http://www.newcultureoflearning.com
 [1]: http://nplusonemag.com/bad-education
 [2]: http://www.khanacademy.org
