@@ -18,12 +18,17 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
+var port;
+
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  port = 3000;
 });
 
 app.configure('production', function(){
-  app.use(express.errorHandler()); 
+  app.use(express.errorHandler());
+  port = process.env.PORT;
+  if (!port) throw("Need the port!");
 });
 
 // Routes
@@ -34,5 +39,5 @@ app.get('/', function(req, res){
   });
 });
 
-app.listen(3000);
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
