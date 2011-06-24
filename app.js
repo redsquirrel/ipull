@@ -1,15 +1,10 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express');
-
+var courses = require('./courses');
 var app = module.exports = express.createServer();
 
 // Configuration
 
-app.configure(function(){
+app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
@@ -20,12 +15,12 @@ app.configure(function(){
 
 var port;
 
-app.configure('development', function(){
+app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
   port = 3000;
 });
 
-app.configure('production', function(){
+app.configure('production', function() {
   app.use(express.errorHandler());
   port = process.env.PORT;
   if (!port) throw("Need the port!");
@@ -33,9 +28,17 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', function(req, res){
-  res.render('index', {
-    title: 'Express'
+app.get('/', function(_, res) {
+  res.render('index');
+});
+
+app.get('/courses', function(_, res) {
+  process.on('uncaughtException', function(e) {
+    res.send("Something unawesome happened: " + e.message);
+  });
+  
+  courses.all(["name"], function(courses) {    
+    res.render('courses/index', {courses: courses});  
   });
 });
 
