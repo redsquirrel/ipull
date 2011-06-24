@@ -3,19 +3,6 @@ net = require("net")
 
 client = redis.createClient();
 
-// client.keys("*", function(err, keys) {
-//   console.log(keys)
-//   var multi = client.multi();
-//   keys.forEach(function(k) {
-//     multi.type(k);
-//   });
-//   multi.exec(function(err, types) {
-//     console.log(types);
-//     client.quit();
-//   });
-// })
-// 
-// 
 var attributes = ["name"];
 
 client.incr("courses:ids", function(err, courseId) {

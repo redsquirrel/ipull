@@ -47,9 +47,9 @@ app.get('/', function(_, res) {
 
 app.get('/courses', function(_, res) {
   var client = redisConnect(); 
-  
+
   process.on('uncaughtException', function(e) {
-    res.send("Something unawesome happened: " + e.message);
+    res.send("Something unawesome happened: " + e.message, 500);
     client.quit();
   });
   
