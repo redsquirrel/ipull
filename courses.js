@@ -1,11 +1,6 @@
-var redis = require("redis");
-var sys = require("sys");
-
-module.exports.all = function(attributes, callback) {
-  
-  var client = redis.createClient();
-  client.smembers("courses", function(error, courseIds) {
-    var multi = client.multi();    
+module.exports.all = function(redis, attributes, callback) {
+  redis.smembers("courses", function(error, courseIds) {
+    var multi = redis.multi();
     courseIds.forEach(function(courseId) {
       attributes.forEach(function(attribute) {
         multi.get("courses:"+courseId+":"+attribute);
@@ -20,7 +15,6 @@ module.exports.all = function(attributes, callback) {
         }
         courses.push(course);
       }
-      client.quit(); // how to ensure this gets closed... stays open if something explodes up above...
       callback(courses);
     });
   });
