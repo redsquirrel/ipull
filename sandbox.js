@@ -19,9 +19,8 @@ client = redis.createClient();
 var attributes = ["name"];
 
 client.incr("courses:ids", function(err, courseId) {
-  // client.sadd("courses", courseId);
-  // client.set("courses:"+courseId+":name", "art stuff");
-
+  client.sadd("courses", courseId);
+  client.set("courses:"+courseId+":name", "Thoreau in the 21st century");
 
   client.smembers("courses", function(err, courseIds) {
     console.log("ids:"+courseIds)
