@@ -2,5 +2,6 @@ h1 Courses
 
 ul
   - courses.forEach(function(course) {
-    li= course.name
+    li
+     a(href="/courses/#{course.id}")= course.name
   - })

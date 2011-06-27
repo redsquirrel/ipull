@@ -5,10 +5,22 @@ module.exports.all = function(redis, attributes, callback) {
       multi.get("courses:"+courseId+":"+attribute);      
     });
     multi.exec(function(error, courseData) {
-      callback(hydrate(courseData, attributes));
+      callback(hydrate(courseIds, courseData, attributes));
     });
   });
 };
+
+var allAttributes = ["name"];
+
+module.exports.find = function(redis, courseId, callback) {
+  var multi = redis.multi();
+  allAttributes.forEach(function(attribute) {
+    multi.get("courses:"+courseId+":"+attribute);      
+  });
+  multi.exec(function(error, courseData) {
+    callback(hydrate([courseId], courseData, allAttributes)[0]);
+  });  
+}
 
 function eachKey(courseIds, attributes, callback) {
   courseIds.forEach(function(courseId) {
@@ -18,10 +30,10 @@ function eachKey(courseIds, attributes, callback) {
   });
 }
 
-function hydrate(courseData, attributes) {
-  var courses = new Array();
+function hydrate(courseIds, courseData, attributes) {
+  var courses = [];
   for (var c = 0; c < courseData.length; c++) {
-    var course = new Object();
+    var course = {id: courseIds[c]};
     for (var a = 0; a < attributes.length; a++) {
       course[attributes[a]] = courseData[c+a];
     }
