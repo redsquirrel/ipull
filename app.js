@@ -22,7 +22,7 @@ app.configure('development', function() {
   
   port = 3000;
   
-  redisConnect = function() { return redis.createClient(); };
+  redisConnect = redis.createClient;
 });
 
 app.configure('production', function() {
@@ -50,7 +50,7 @@ app.get('/courses', function(req, res) {
 });
 
 app.get('/courses/:id', function(req, res) {
-  courseController.show(redisConnect, req, res)
+  courseController.show(redisConnect, req, res);
 })
 
 app.listen(port, function() {
