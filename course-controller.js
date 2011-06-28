@@ -22,7 +22,10 @@ function setupConnection(connect, res) {
   var client = connect(); 
 
   process.on('uncaughtException', function(e) {
-    res.send("Something unawesome happened: " + e.message, 500);
+    if (res && res.send) {
+      res.send("Something unawesome happened: " + e.message, 500);
+    }
+    console.log("Something unawesome happened: " + e.message);
     client.quit();
   });
   
