@@ -1,19 +1,19 @@
 var courses = require('./courses');
 
-module.exports.index = function(connect, _, res) {
+module.exports.index = function(connect, res, callback) {
   var client = setupConnection(connect, res);
-  
-  courses.all(client, function(courses) {
-    res.render('courses/index', {courses: courses});
+  courses.all(client, function(err, courses) {
+    if (err) throw err;
+    callback(null, courses);
     client.quit();
   });  
 };
 
-module.exports.show = function(connect, req, res) {
+module.exports.show = function(connect, courseId, res, callback) {
   var client = setupConnection(connect, res);
 
-  courses.find(client, req.params.id, function(course) {
-    res.render('courses/show', {course: course});
+  courses.find(client, courseId, function(err, course) {
+    callback(null, course);
     client.quit();
   });
 };

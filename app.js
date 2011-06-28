@@ -45,12 +45,16 @@ app.get('/', function(_, res) {
   res.render('index');
 });
 
-app.get('/courses', function(req, res) {
-  courseController.index(redisConnect, req, res);
+app.get('/courses', function(_, res) {
+  courseController.index(redisConnect, res, function(err, courses) {
+    res.render('courses/index', {courses: courses});
+  });
 });
 
 app.get('/courses/:id', function(req, res) {
-  courseController.show(redisConnect, req, res);
+  courseController.show(redisConnect, req.params.id, res, function(err, course) {
+    res.render('courses/show', {course: course});    
+  });
 })
 
 app.listen(port, function() {

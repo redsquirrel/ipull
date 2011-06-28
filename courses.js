@@ -1,25 +1,57 @@
+var courses;
+module.exports = courses = {};
+
 var allAttributes = ["name"];
 
-module.exports.all = function(redis, callback) {
+courses.all = function(redis, callback) {
   redis.smembers("courses", function(error, courseIds) {
     var multi = redis.multi();
     eachKey(courseIds, function(courseId, attribute) {
       multi.get("courses:"+courseId+":"+attribute);      
     });
     multi.exec(function(error, courseData) {
-      callback(hydrate(courseData, courseIds));
+      callback(null, hydrate(courseData, courseIds));
     });
   });
 };
 
-module.exports.find = function(redis, courseId, callback) {
+courses.find = function(redis, courseId, callback) {
   var multi = redis.multi();
   allAttributes.forEach(function(attribute) {
     multi.get("courses:"+courseId+":"+attribute);      
   });
   multi.exec(function(error, courseData) {
-    callback(hydrate(courseData, [courseId])[0]);
+    callback(null, hydrate(courseData, [courseId])[0]);
   });  
+};
+
+courses.create = function(redis, data, callback) {
+  redis.incr("courses:ids", function(err, courseId) {
+    redis.sadd("courses", courseId);
+    for (var attribute in data) {
+      redis.set("courses:"+courseId+":"+attribute, data[attribute]);
+    }
+    if (callback) {
+      courses.find(redis, courseId, callback);
+    }
+  });
+};
+
+courses.delete = function(redis, courseId, callback) {
+  redis.srem("courses", courseId);
+  allAttributes.forEach(function(attribute) {
+    redis.del("courses:"+courseId+":"+attribute);
+    if (callback) callback();
+  });
+};
+
+courses.deleteAll = function(redis, callback) {
+  redis.smembers("courses", function(err, courseIds) {
+    courseIds.forEach(function(courseId) {
+      courses.delete(redis, courseId);
+    });
+    callback();
+  });
 };
 
 function eachKey(courseIds, callback) {
