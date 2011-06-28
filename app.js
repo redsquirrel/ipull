@@ -1,5 +1,5 @@
 var express = require('express');
-var courseController = require('./courseController');
+var courseController = require('./course-controller');
 var redis = require('redis');
 
 var app = module.exports = express.createServer();
