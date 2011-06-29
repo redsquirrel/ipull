@@ -2,14 +2,14 @@ var assert = require('assert');
 var redis = require('redis');
 var vows = require('vows');
 
-var courseController = require('../course-controller');
 var courses = require('../courses');
 
 var testRedis = function() {
   return redis.createClient(53535);
 };
 
-function setupBatch(tests) {
+var testCourseName = "Thoreau in the 21st Century";
+var setupBatch = function(tests) {
   var fixtureData = {
     '': {
       topic: function() {
@@ -20,7 +20,7 @@ function setupBatch(tests) {
       '': {
         topic: function(client) {
           var callback = this.callback;
-          courses.create(client, {name: "Thoreau in the 21st Century"}, function() {
+          courses.create(client, {name: testCourseName}, function() {
             client.quit();
             callback();
           });
@@ -36,21 +36,21 @@ function setupBatch(tests) {
   return fixtureData;
 };
 
-vows.describe('course-controller').addBatch(setupBatch({
-  index: {
+vows.describe('courses').addBatch(setupBatch({
+  all: {
     topic: function() {
-      courseController.index(testRedis, null, this.callback);
+      courses.all(testRedis, this.callback);
     },
-    'should show 1 course': function (courses) {
+    'should provide all 2 courses': function (courses) {
       assert.equal(courses.length, 1);
     }
   },
-  show: {
+  find: {
     topic: function() {
-      courseController.show(testRedis, 1, null, this.callback);
+      courses.find(testRedis, 1, this.callback);
     },
-    'should show a course': function (course) {
-      assert.ok(course);
+    'should provide a course': function (course) {
+      assert.equal(course.name, testCourseName);
     }
   }
 })).run();

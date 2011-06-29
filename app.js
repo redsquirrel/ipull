@@ -1,5 +1,5 @@
 var express = require('express');
-var courseController = require('./course-controller');
+var courses = require('./courses');
 var redis = require('redis');
 
 var app = module.exports = express.createServer();
@@ -39,6 +39,22 @@ app.configure('production', function() {
   };
 });
 
+function setupConnection(res) {
+  return function() {
+    var client = redisConnect(); 
+
+    process.on('uncaughtException', function(e) {
+      if (res && res.send) {
+        res.send("Something unawesome happened: " + e.message, 500);
+      }
+      console.log("Something unawesome happened: " + e.message);
+      client.quit();
+    });
+
+    return client;
+  }
+}
+
 // Routes
 
 app.get('/', function(_, res) {
@@ -46,14 +62,14 @@ app.get('/', function(_, res) {
 });
 
 app.get('/courses', function(_, res) {
-  courseController.index(redisConnect, res, function(err, courses) {
+  courses.all(setupConnection(res), function(err, courses) {
     if (err) throw err;
     res.render('courses/index', {courses: courses});
   });
 });
 
 app.get('/courses/:id', function(req, res) {
-  courseController.show(redisConnect, req.params.id, res, function(err, course) {
+  courses.find(setupConnection(res), req.params.id, function(err, course) {
     if (err) throw err;
     res.render('courses/show', {course: course});    
   });
