@@ -3,8 +3,7 @@ var courses = require('./courses');
 module.exports.index = function(connect, res, callback) {
   var client = setupConnection(connect, res);
   courses.all(client, function(err, courses) {
-    if (err) throw err;
-    callback(null, courses);
+    callback(err, courses);
     client.quit();
   });  
 };
@@ -13,10 +12,14 @@ module.exports.show = function(connect, courseId, res, callback) {
   var client = setupConnection(connect, res);
 
   courses.find(client, courseId, function(err, course) {
-    callback(null, course);
+    callback(err, course);
     client.quit();
   });
 };
+
+// The responsibility for this 'controller' seems unclear...
+// It really only cares about non-databases stuff because of the need for the
+// response on uncaughtException...
 
 function setupConnection(connect, res) {
   var client = connect(); 

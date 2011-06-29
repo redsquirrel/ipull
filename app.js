@@ -47,12 +47,14 @@ app.get('/', function(_, res) {
 
 app.get('/courses', function(_, res) {
   courseController.index(redisConnect, res, function(err, courses) {
+    if (err) throw err;
     res.render('courses/index', {courses: courses});
   });
 });
 
 app.get('/courses/:id', function(req, res) {
   courseController.show(redisConnect, req.params.id, res, function(err, course) {
+    if (err) throw err;
     res.render('courses/show', {course: course});    
   });
 })
