@@ -42,13 +42,14 @@ app.configure('production', function() {
 function setupConnection(res) {
   return function() {
     var client = redisConnect(); 
-
-    process.on('uncaughtException', function(e) {
-      if (res && res.send) {
+    
+    var errorHandled = false;
+    client.on('error', function(e) {
+      if (!errorHandled && res && res.send) {
         res.send("Something unawesome happened: " + e.message, 500);
+        errorHandled = true;
       }
       console.log("Something unawesome happened: " + e.message);
-      client.quit();
     });
 
     return client;
