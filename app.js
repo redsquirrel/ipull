@@ -43,14 +43,15 @@ function setupConnection(res) {
   return function() {
     var client = redisConnect(); 
     
-    var errorHandled = false;
-    client.on('error', function(e) {
-      if (!errorHandled && res && res.send) {
+    client.once('error', function(e) {
+      if (res && res.send) {
         res.send("Something unawesome happened: " + e.message, 500);
-        errorHandled = true;
       }
-      console.log("Something unawesome happened: " + e.message);
     });
+
+    client.on('error', function(e) {
+      console.log("Something unawesome happened: " + e.message);
+    }); 
 
     return client;
   }
