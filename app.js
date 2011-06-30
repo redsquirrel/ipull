@@ -44,9 +44,7 @@ function setupConnection(res) {
     var client = redisConnect(); 
     
     client.once('error', function(e) {
-      if (res && res.send) {
-        res.send("Something unawesome happened: " + e.message, 500);
-      }
+      res.send("Something unawesome happened: " + e.message, 500);
     });
 
     client.on('error', function(e) {
