@@ -70,7 +70,7 @@ vows.describe('courses').addBatch(setupBatch({
        courses.all(this.callback);
      },
      'provides both courses': function(courseData) {
-       assert.equal(courseData.length, 2);
+       assert.length(courseData, 2);
      }
    }
    ,
@@ -97,9 +97,11 @@ vows.describe('courses').addBatch(setupBatch({
           callback(null, {course: topic.course, courses: courses});
         });
       },
-      'so there are now three courses': function(topic) {
+      'with the correct name': function(topic) {
         assert.equal(topic.course.name, "Social Psychology");
-        assert.equal(topic.courses.length, 3);
+      },
+      'so there are now three courses': function(topic) {
+        assert.length(topic.courses, 3);
       }
     }
   }
