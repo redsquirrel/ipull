@@ -116,7 +116,7 @@ vows.describe('courses').addBatch(setupBatch({
         courses.all(this.callback);
       },
       'so there is now only one course': function(courseData) {
-        assert.equal(courseData.length, 1);
+        assert.length(courseData, 1);
       }      
     }
   }
