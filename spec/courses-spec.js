@@ -2,68 +2,120 @@ var assert = require('assert');
 var redis = require('redis');
 var vows = require('vows');
 
-var courses = require('../courses');
+var Courses = require('../courses').Courses;
 
 var testRedis = function() {
   return redis.createClient(53535);
 };
 
-var testCourseNames = ["Thoreau in the 21st Century", "13th CenturyMongolian Art"];
+var testCourseNames = [
+  "Thoreau in the 21st Century",
+  "13th Century Mongolian Art"
+];
 
-var clearData = function() {
-  var client = testRedis();
-  var callback = this.callback;
-  courses.deleteAll(client, function() {
-    client.quit();
-    callback();
-  });
-};
+var fixtureData = function(label, vow) {
+  var namespaceCourses = function() {
+    var courses = new Courses(testRedis(), label);
+    this.callback(null, courses);
+  }
 
-var courseCounter = 0;
-var newCourse = function() {
-  var client = testRedis();
-  var callback = this.callback;
-  courses.create(client, {name: testCourseNames[courseCounter++]}, function() {
-    client.quit();
-    callback();
-  });
-}
+  var clearData = function(courses) {
+    var callback = this.callback;
+    courses.deleteAll(function() {
+      callback(null, courses);
+    });
+  };
 
-var setupBatch = function(tests) {
-  var fixtureData = {
+  var courseCounter = 0;
+  var newCourse = function(courses) {
+    var callback = this.callback;
+    courses.create({name: testCourseNames[courseCounter++]}, function() {
+      callback(null, courses);
+    });
+  }
+
+  var closeRedis = function(courses) {
+    courses.disconnect();
+  }
+
+  return {
     '': {
-      topic: clearData,
+      topic: namespaceCourses,
       '': {
-        topic: newCourse,
+        topic: clearData,
         '': {
-          topic: newCourse
+          topic: newCourse,
+          '': {
+            topic: newCourse,
+            '': vow,
+            teardown: closeRedis
+          }
         }
       }
     }
   };
-  
-  for (var label in tests) {
-    fixtureData[''][''][''][label] = tests[label];
+}
+
+var setupBatch = function(vows) {
+  var batch = {};
+  for (var label in vows) {
+    batch[label] = fixtureData(label, vows[label]);
   }
-  
-  return fixtureData;
+  return batch;
 };
 
 vows.describe('courses').addBatch(setupBatch({
   all: {
-    topic: function() {
-      courses.all(testRedis, this.callback);
+     topic: function(courses) {
+       courses.all(this.callback);
+     },
+     'provides both courses': function(courseData) {
+       assert.equal(courseData.length, 2);
+     }
+   }
+   ,
+   find: {
+     topic: function(courses) {
+       courses.find(1, this.callback);
+     },
+     'provides a specific course': function(courseData) {
+       assert.equal(courseData.name, testCourseNames[0]);
+     }
+   }
+   ,
+  create: {
+    topic: function(courses) {
+      var callback = this.callback;
+      courses.create({name: "Social Psychology"}, function(err, course) {
+        callback(null, {courses: courses, course: course});
+      });
     },
-    'should provide all 2 courses': function (courses) {
-      assert.equal(courses.length, 2);
+    'adds another awesome course': {
+      topic: function(topic) {
+        var callback = this.callback;
+        topic.courses.all(function(err, courses) {
+          callback(null, {course: topic.course, courses: courses});
+        });
+      },
+      'so there are now three courses': function(topic) {
+        assert.equal(topic.course.name, "Social Psychology");
+        assert.equal(topic.courses.length, 3);
+      }
     }
-  },
-  find: {
-    topic: function() {
-      courses.find(testRedis, 1, this.callback);
+  }
+  ,
+  delete: {
+    topic: function(courses) {
+      var callback = this.callback;
+      courses.delete(1, function() { callback(null, courses) });
     },
-    'should provide a course': function (course) {
-      assert.equal(course.name, testCourseNames[0]);
+    'removes a course': {
+      topic: function(courses) {
+        courses.all(this.callback);
+      },
+      'so there is now only one course': function(courseData) {
+        assert.equal(courseData.length, 1);
+      }      
     }
   }
 })).run();

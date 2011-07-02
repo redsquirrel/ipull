@@ -1,73 +1,73 @@
-var courses;
-module.exports = courses = {};
 
 var allAttributes = ["name"];
 
-// TODO: Need to handle quit() in create/delete/deleteAll
+module.exports.Courses = function(redis, namespace) {
+  function namespaced(key) {
+    if (namespace) {
+      return namespace + ":" + key;
+    } else {
+      return key;
+    }
+  };
+  
+  this.all = function(callback) {
+    redis.smembers(namespaced("courses"), function(error, courseIds) {
+      var multi = redis.multi();
+      eachKey(courseIds, function(courseId, attribute) {
+        multi.get("courses:"+courseId+":"+attribute);      
+      });
+      multi.exec(function(error, courseData) {
+        callback(null, hydrate(courseData, courseIds));
+      });
+    });
+  };
 
-courses.all = function(redis, callback) {
-  redis = connect(redis);
-  redis.smembers("courses", function(error, courseIds) {
+  this.find = function(courseId, callback) {
     var multi = redis.multi();
-    eachKey(courseIds, function(courseId, attribute) {
-      multi.get("courses:"+courseId+":"+attribute);      
+    allAttributes.forEach(function(attribute) {
+      multi.get(namespaced("courses:"+courseId+":"+attribute));      
     });
     multi.exec(function(error, courseData) {
-      callback(null, hydrate(courseData, courseIds));
-      redis.quit();
+      callback(null, hydrate(courseData, [courseId])[0]);
     });
-  });
-};
+  };
 
-courses.find = function(redis, courseId, callback) {
-  redis = connect(redis);
-  var multi = redis.multi();
-  allAttributes.forEach(function(attribute) {
-    multi.get("courses:"+courseId+":"+attribute);      
-  });
-  multi.exec(function(error, courseData) {
-    callback(null, hydrate(courseData, [courseId])[0]);
+  this.create = function(data, callback) {
+    var my = this;
+    redis.incr(namespaced("courses:ids"), function(err, courseId) {      
+      redis.sadd(namespaced("courses"), courseId);
+      for (var attribute in data) {
+        redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
+      }
+      if (callback) {
+        my.find(courseId, callback);
+      }
+    });
+  };
+
+  this.delete = function(courseId, callback) {
+    redis.srem(namespaced("courses"), courseId);
+    allAttributes.forEach(function(attribute) {
+      redis.del(namespaced("courses:"+courseId+":"+attribute));
+      if (callback) callback();
+    });
+  };
+
+  this.deleteAll = function(callback) {
+    var my = this;
+    redis.smembers(namespaced("courses"), function(err, courseIds) {
+      courseIds.forEach(function(courseId) {
+        my.delete(courseId);
+      });
+      redis.del(namespaced("courses"), function() {
+        redis.del(namespaced("courses:ids"), callback);
+      })
+    });
+  };
+  
+  this.disconnect = function() {
     redis.quit();
-  });
-};
-
-courses.create = function(redis, data, callback) {
-  redis = connect(redis);
-  redis.incr("courses:ids", function(err, courseId) {
-    redis.sadd("courses", courseId);
-    for (var attribute in data) {
-      redis.set("courses:"+courseId+":"+attribute, data[attribute]);
-    }
-    if (callback) {
-      courses.find(redis, courseId, callback);
-    }
-  });
-};
-
-courses.delete = function(redis, courseId, callback) {
-  redis = connect(redis);
-  redis.srem("courses", courseId);
-  allAttributes.forEach(function(attribute) {
-    redis.del("courses:"+courseId+":"+attribute);
-    if (callback) callback();
-  });
-};
-
-courses.deleteAll = function(redis, callback) {
-  redis = connect(redis);
-  redis.smembers("courses", function(err, courseIds) {
-    courseIds.forEach(function(courseId) {
-      courses.delete(redis, courseId);
-    });
-    redis.del("courses", function() {
-      redis.del("courses:ids", callback);
-    })
-  });
-};
-
-function connect(redis) {
-  if (typeof redis == 'function') redis = redis();
-  return redis;
+  }
 }
 
 function eachKey(courseIds, callback) {

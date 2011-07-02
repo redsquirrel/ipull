@@ -1,5 +1,5 @@
 var express = require('express');
-var courses = require('./courses');
+var Courses = require('./courses').Courses;
 var redis = require('redis');
 
 var app = module.exports = express.createServer();
@@ -39,20 +39,18 @@ app.configure('production', function() {
   };
 });
 
-function setupConnection(res) {
-  return function() {
-    var client = redisConnect(); 
-    
-    client.once('error', function(e) {
-      res.send("Something unawesome happened: " + e.message, 500);
-    });
+function setupCourses(res) {
+  var client = redisConnect(); 
+  
+  client.once('error', function(e) {
+    res.send("Something unawesome happened: " + e.message, 500);
+  });
 
-    client.on('error', function(e) {
-      console.log("Something unawesome happened: " + e.message);
-    }); 
+  client.on('error', function(e) {
+    console.log("Something unawesome happened: " + e.message);
+  }); 
 
-    return client;
-  }
+  return new Courses(client);
 }
 
 // Routes
@@ -62,18 +60,22 @@ app.get('/', function(_, res) {
 });
 
 app.get('/courses', function(_, res) {
-  courses.all(setupConnection(res), function(err, courses) {
+  var courses = setupCourses(res);
+  courses.all(function(err, courseData) {
     if (err) throw err;
-    res.render('courses/index', {courses: courses});
+    res.render('courses/index', {courses: courseData});
+    courses.disconnect();
   });
 });
 
 app.get('/courses/:id', function(req, res) {
-  courses.find(setupConnection(res), req.params.id, function(err, course) {
+  var courses = setupCourses(res);
+  courses.find(req.params.id, function(err, course) {
     if (err) throw err;
-    res.render('courses/show', {course: course});    
+    res.render('courses/show', {course: course});
+    courses.disconnect();
   });
-})
+});
 
 app.listen(port, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  
