@@ -7,11 +7,16 @@ With the cost of knowledge approaching zero, and the cost of a college degree ou
 
 This experiment is meant to explore one of many alternatives.
 
-At its most extreme, it is a platform for courses to be proposed by the people interested in learning a subject. A motivated learner sets up a course, choosing the price, class size range, dates, times, duration of a course, and creates an initial description. The learner then commits to paying the price for the course if a minimum number of learners also commit to pay and participate. Once the course begins, the learners are charged the price. For anyone who successfully completes and passes the course, their money would be credited back to them, with interest. They also have the option to use that money to participate in another course. Or they could direct some of that money toward awards for their most helpful classmates.
+iPull is a platform for courses to be proposed by the people interested in learning a subject. A motivated learner sets up a course, choosing the price, class size range, dates, times, duration of a course, and creates an initial description. The learner then commits to paying the price for the course if a minimum number of learners also commit to pay and participate. Once the course begins, the learners are charged the price. At the conclusion of the course, the learners will be able to award the money they paid for the course to any of the other course participants. In this way, if there are some oustanding teachers or learning facilitators in a group, they will be rewarded for their skills and effort. They will also gain prestige in the iPull community because all awards are published.
 
-A less extreme scenario would include a more traditional teacher or facilitator role. And in this case, the person (or people) taking on this responsibility would be paid a flat fee for their leadership, plus any voluntary awards from the learners.
+For example, let's say a course cost $100 and there were 10 learners who participated. A single learner would have the option to:
 
-This will be a non-profit entity. The codebase for iPull will be freely available via open source.
+* Do nothing, and iPull would use that money for operational costs.
+* Take all $100 and give it to one of the other participants, implying that this person was exceptionally helpful to the learner.
+* Take a portion of the $100 and give it to one of the other participants, leaving the rest for iPull's operations.
+* Split the $100 into whatever portions make sense and give it to multiple participants based on their helpfulness.
+
+iPull will be a non-profit entity. The codebase for iPull will be freely available via open source.
 
 I'm open to ideas, feedback, and collaboration.
 
