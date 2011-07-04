@@ -14,15 +14,26 @@ For example, let's say a course cost $100 and there were 10 learners who partici
 * Do nothing, and iPull would use that money for operational costs.
 * Take all $100 and give it to one of the other participants, implying that this person was exceptionally helpful to the learner.
 * Take a portion of the $100 and give it to one of the other participants, leaving the rest for iPull's operations.
-* Split the $100 into whatever portions make sense and give it to multiple participants based on their helpfulness.
+* Split the $100 into whatever portions make sense and give it to multiple (in this example, up to 9) participants based on their helpfulness.
 
-iPull will be a non-profit entity. The codebase for iPull will be freely available via open source.
+iPull will be a non-profit entity.
+
+The codebase for iPull is freely available to all to use for any purpose.
 
 I'm open to ideas, feedback, and collaboration.
 
-Dave Hoover, @redsquirrel
-dave.hoover@gmail.com
+Dave Hoover, @redsquirrel, dave.hoover@gmail.com
+
+> "In a society which emphasizes teaching, children and students
+> - and adults - become passive and unable to think or act for
+> themselves. Creative, active individuals can only grow up in
+> a society which emphasizes learning instead of teaching. ...
+> Instead of the lock-step of compulsory schooling in a fixed place,
+> work in piecemeal ways to decentralize the process of learning and
+> enrich it through contact with many places and people all over the city.""
+> Christopher Alexander, [A Pattern Language][3]
 
 [0]: http://www.newcultureoflearning.com
 [1]: http://nplusonemag.com/bad-education
 [2]: http://www.khanacademy.org
+[3]: http://en.wikipedia.org/wiki/A_Pattern_Language
