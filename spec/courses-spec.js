@@ -92,17 +92,15 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   create: {
     topic: function(courses) {
-      var callback = this.callback;
       courses.create({name: "Social Psychology"}, function(err, course) {
-        callback(null, {courses: courses, course: course});
-      });
+        this.callback(null, {courses: courses, course: course});
+      }.bind(this));
     },
     'adds another awesome course': {
       topic: function(topic) {
-        var callback = this.callback;
         topic.courses.all(function(err, courses) {
-          callback(null, {course: topic.course, courses: courses});
-        });
+          this.callback(null, {course: topic.course, courses: courses});
+        }.bind(this));
       },
       'with the correct name': function(topic) {
         assert.equal(topic.course.name, "Social Psychology");
@@ -110,6 +108,27 @@ vows.describe('courses').addBatch(setupBatch({
       'so there are now three courses': function(topic) {
         assert.length(topic.courses, 3);
       }
+    }
+  }
+  ,
+  "create with same name": {
+    topic: function(courses) {
+      courses.create({name: testCourseNames[0]}, function(err, course) {
+        this.callback(null, {courses: courses, course: course});
+      }.bind(this));
+    },
+    'with the correct permalink': function(topic) {
+      assert.equal(topic.course.permalink, "thoreau-21st-century-1");
+    },
+    'twice': {
+      topic: function(topic) {
+        topic.courses.create({name: testCourseNames[0]}, function(err, course) {
+          this.callback(null, {courses: topic.courses, course: course});
+        }.bind(this));
+      },
+      'with the correct permalink': function(topic) {
+        assert.equal(topic.course.permalink, "thoreau-21st-century-2");
+      }    
     }
   }
   ,

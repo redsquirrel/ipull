@@ -10,7 +10,27 @@ module.exports.Courses = function(redis, namespace) {
     } else {
       return key;
     }
-  };
+  }
+  
+  var setPermalink = function(name, courseId, index, callback) {
+    var suffix;
+    if (index) {
+      suffix = "-" + index;
+    } else {
+      suffix = "";
+    }
+
+    var permalink = seo.sluggify(name) + suffix;
+    this.findByPermalink(permalink, function(error, foundCourse) {
+      if (foundCourse) {
+        setPermalink(name, courseId, index+1, callback);
+      } else {
+        redis.hset(namespaced("courses:permalinks:ids"), permalink, courseId);
+        redis.set(namespaced("courses:"+courseId+":permalink"), permalink);
+        callback();
+      }
+    }.bind(this));
+  }.bind(this);
   
   this.all = function(callback) {
     redis.smembers(namespaced("courses"), function(error, courseIds) {
@@ -25,13 +45,19 @@ module.exports.Courses = function(redis, namespace) {
   };
 
   this.find = function(courseId, callback) {
-    var multi = redis.multi();
-    allAttributes.forEach(function(attribute) {
-      multi.get(namespaced("courses:"+courseId+":"+attribute));      
-    });
-    multi.exec(function(error, courseData) {
-      callback(error, hydrate(courseData, [courseId])[0]);
-    });
+    redis.sismember(namespaced("courses"), courseId, function(error, result) {
+      if (result) {
+        var multi = redis.multi();
+        allAttributes.forEach(function(attribute) {
+          multi.get(namespaced("courses:"+courseId+":"+attribute));      
+        });
+        multi.exec(function(error, courseData) {
+          callback(error, hydrate(courseData, [courseId])[0]);
+        });
+      } else {
+        callback();
+      }
+    })
   };
   
   this.findByPermalink = function(permalink, callback) {
@@ -42,17 +68,17 @@ module.exports.Courses = function(redis, namespace) {
 
   this.create = function(data, callback) {
     if (!data.name) throw "Missing name in " + sys.inspect(data);
-  
+    
     redis.incr(namespaced("courses:ids"), function(err, courseId) {      
-      redis.sadd(namespaced("courses"), courseId);
-      redis.hset(namespaced("courses:permalinks:ids"), seo.sluggify(data.name), courseId);
-      redis.set(namespaced("courses:"+courseId+":permalink"), seo.sluggify(data.name));
-      for (var attribute in data) {
-        redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
-      }
-      if (callback) {
-        this.find(courseId, callback);
-      }
+      setPermalink(data.name, courseId, 0, function() {
+        redis.sadd(namespaced("courses"), courseId);
+        for (var attribute in data) {
+          redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
+        }
+        if (callback) {
+          this.find(courseId, callback);
+        }
+      }.bind(this));
     }.bind(this));
   };
 
