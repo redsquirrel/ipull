@@ -20,18 +20,16 @@ var fixtureData = function(label, vow) {
   }
 
   var clearData = function(courses) {
-    var callback = this.callback;
     courses.deleteAll(function() {
-      callback(null, courses);
-    });
+      this.callback(null, courses);
+    }.bind(this));
   };
 
   var courseCounter = 0;
   var newCourse = function(courses) {
-    var callback = this.callback;
     courses.create({name: testCourseNames[courseCounter++]}, function() {
-      callback(null, courses);
-    });
+      this.callback(null, courses);
+    }.bind(this));
   }
 
   var closeRedis = function(courses) {
@@ -78,11 +76,20 @@ vows.describe('courses').addBatch(setupBatch({
      topic: function(courses) {
        courses.find(1, this.callback);
      },
-     'provides a specific course': function(courseData) {
+     'provides the course by id': function(courseData) {
        assert.equal(courseData.name, testCourseNames[0]);
      }
    }
    ,
+   findByPermalink: {
+     topic: function(courses) {
+       courses.findByPermalink("thoreau-21st-century", this.callback);
+     },
+     'provides the course by name': function(courseData) {
+       assert.equal(courseData.name, testCourseNames[0]);
+     }
+   }
+  ,
   create: {
     topic: function(courses) {
       var callback = this.callback;

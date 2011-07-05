@@ -3,5 +3,5 @@ h1 Courses
 ul
   - courses.forEach(function(course) {
     li
-     a(href="/courses/#{course.id}")= course.name
+     a(href="/courses/#{course.permalink}")= course.name
   - })

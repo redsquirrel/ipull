@@ -1,5 +1,7 @@
+var sys = require("sys");
+var seo = require("./seo");
 
-var allAttributes = ["name"];
+var allAttributes = ["name", "permalink"];
 
 module.exports.Courses = function(redis, namespace) {
   function namespaced(key) {
@@ -14,10 +16,10 @@ module.exports.Courses = function(redis, namespace) {
     redis.smembers(namespaced("courses"), function(error, courseIds) {
       var multi = redis.multi();
       eachKey(courseIds, function(courseId, attribute) {
-        multi.get("courses:"+courseId+":"+attribute);      
+        multi.get(namespaced("courses:"+courseId+":"+attribute));
       });
       multi.exec(function(error, courseData) {
-        callback(null, hydrate(courseData, courseIds));
+        callback(error, hydrate(courseData, courseIds));
       });
     });
   };
@@ -28,41 +30,51 @@ module.exports.Courses = function(redis, namespace) {
       multi.get(namespaced("courses:"+courseId+":"+attribute));      
     });
     multi.exec(function(error, courseData) {
-      callback(null, hydrate(courseData, [courseId])[0]);
+      callback(error, hydrate(courseData, [courseId])[0]);
     });
+  };
+  
+  this.findByPermalink = function(permalink, callback) {
+    redis.hget(namespaced("courses:permalinks:ids"), permalink, function(err, courseId) {
+      this.find(courseId, callback);
+    }.bind(this));
   };
 
   this.create = function(data, callback) {
-    var my = this;
+    if (!data.name) throw "Missing name in " + sys.inspect(data);
+  
     redis.incr(namespaced("courses:ids"), function(err, courseId) {      
       redis.sadd(namespaced("courses"), courseId);
+      redis.hset(namespaced("courses:permalinks:ids"), seo.sluggify(data.name), courseId);
+      redis.set(namespaced("courses:"+courseId+":permalink"), seo.sluggify(data.name));
       for (var attribute in data) {
         redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
       }
       if (callback) {
-        my.find(courseId, callback);
+        this.find(courseId, callback);
       }
-    });
+    }.bind(this));
   };
 
   this.delete = function(courseId, callback) {
     redis.srem(namespaced("courses"), courseId);
     allAttributes.forEach(function(attribute) {
       redis.del(namespaced("courses:"+courseId+":"+attribute));
-      if (callback) callback();
     });
+    if (callback) callback();
   };
 
   this.deleteAll = function(callback) {
-    var my = this;
     redis.smembers(namespaced("courses"), function(err, courseIds) {
       courseIds.forEach(function(courseId) {
-        my.delete(courseId);
-      });
+        this.delete(courseId);
+      }.bind(this));
       redis.del(namespaced("courses"), function() {
-        redis.del(namespaced("courses:ids"), callback);
+        redis.del(namespaced("courses:ids"), function() {
+          redis.del(namespaced("courses:permalinks:ids"), callback);
+        });
       })
-    });
+    }.bind(this));
   };
   
   this.disconnect = function() {
@@ -80,7 +92,7 @@ function eachKey(courseIds, callback) {
 
 function hydrate(courseData, courseIds) {
   var courses = [];
-  for (var c = 0; c < courseData.length; c++) {
+  for (var c = 0; c < courseData.length; c += allAttributes.length) {
     var course = {id: courseIds[c]};
     for (var a = 0; a < allAttributes.length; a++) {
       course[allAttributes[a]] = courseData[c+a];

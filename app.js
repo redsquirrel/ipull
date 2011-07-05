@@ -56,23 +56,23 @@ function setupCourses(res) {
 // Routes
 
 app.get('/', function(_, res) {
-  res.render('index');
+  res.render('index', {title: ""});
 });
 
 app.get('/courses', function(_, res) {
   var courses = setupCourses(res);
   courses.all(function(err, courseData) {
     if (err) throw err;
-    res.render('courses/index', {courses: courseData});
+    res.render('courses/index', {courses: courseData, title: "courses"});
     courses.disconnect();
   });
 });
 
-app.get('/courses/:id', function(req, res) {
+app.get('/courses/:permalink', function(req, res) {
   var courses = setupCourses(res);
-  courses.find(req.params.id, function(err, course) {
+  courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
-    res.render('courses/show', {course: course});
+    res.render('courses/show', {course: course, title: course.name});
     courses.disconnect();
   });
 });
