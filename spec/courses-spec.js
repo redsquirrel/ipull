@@ -111,7 +111,7 @@ vows.describe('courses').addBatch(setupBatch({
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
-    'with the correct permalink': function(topic) {
+    'has the correct permalink': function(topic) {
       assert.equal(topic.course.permalink, "thoreau-21st-century-1");
     },
     'twice': {
@@ -120,9 +120,21 @@ vows.describe('courses').addBatch(setupBatch({
           this.callback(null, {courses: topic.courses, course: course});
         }.bind(this));
       },
-      'with the correct permalink': function(topic) {
+      'has the correct permalink': function(topic) {
         assert.equal(topic.course.permalink, "thoreau-21st-century-2");
       }    
+    }
+  }
+  ,
+  "create without a name": {
+    topic: function(courses) {
+      this.callback(null, courses);
+    },
+    'provides an error': function(courses) {
+      courses.create({foo: "bar"}, function(err, course) {
+        assert.ok(err);
+        assert.isUndefined(course);
+      });      
     }
   }
   ,

@@ -26,9 +26,11 @@ module.exports.Courses = function(redis, namespace) {
   };
 
   this.create = function(data, callback) {
-    if (!data.name) throw "Missing name in " + sys.inspect(data);
+    if (!data.name) return callback("Missing name!");
     
-    redis.incr(namespaced("courses:ids"), function(err, courseId) {      
+    redis.incr(namespaced("courses:ids"), function(error, courseId) {      
+      if (error && callback) return callback(error);
+      
       setPermalink(data.name, courseId, 0, function() {
         redis.sadd(namespaced("courses"), courseId);
         resetSortedCourseIds();
@@ -43,8 +45,8 @@ module.exports.Courses = function(redis, namespace) {
   };
 
   this.delete = function(courseId, callback) {
-    redis.srem(namespaced("courses"), courseId, function() {
-      resetSortedCourseIds(function() {
+    redis.srem(namespaced("courses"), courseId, function(error, _) {
+      resetSortedCourseIds(function(error, _) {
         allAttributes.forEach(function(attribute) {
           redis.del(namespaced("courses:"+courseId+":"+attribute));
         });
@@ -102,6 +104,8 @@ module.exports.Courses = function(redis, namespace) {
     var suffix = index ? "-" + index : "";
     var permalink = seo.sluggify(name) + suffix;
     this.findByPermalink(permalink, function(error, foundCourse) {
+      if (error) return callback(error);
+      
       if (foundCourse) {
         setPermalink(name, courseId, index+1, callback);
       } else {
