@@ -2,6 +2,7 @@ var sys = require("sys");
 var seo = require("./seo");
 
 var allAttributes = ["name", "permalink"];
+var safeAttributes = ["name"];
 
 module.exports.Courses = function(redis, namespace) {
   
@@ -33,10 +34,11 @@ module.exports.Courses = function(redis, namespace) {
       
       setPermalink(data.name, courseId, 0, function() {
         redis.sadd(namespaced("courses"), courseId);
-        resetSortedCourseIds();
         for (var attribute in data) {
+          if (safeAttributes.indexOf(attribute) == -1) continue;
           redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
         }
+        resetSortedCourseIds();
         if (callback) {
           find(courseId, callback);
         }
@@ -47,8 +49,10 @@ module.exports.Courses = function(redis, namespace) {
   this.delete = function(courseId, callback) {
     redis.srem(namespaced("courses"), courseId, function(error, _) {
       resetSortedCourseIds(function(error, _) {
-        allAttributes.forEach(function(attribute) {
-          redis.del(namespaced("courses:"+courseId+":"+attribute));
+        redis.keys(namespaced("courses:"+courseId+":*"), function(error, keys) {
+          keys.forEach(function(key) {
+            redis.del(key);
+          });
         });
         if (callback) callback();
       });
@@ -69,6 +73,10 @@ module.exports.Courses = function(redis, namespace) {
       })
     }.bind(this));
   };
+  
+  this.connection = function() {
+    return redis;
+  }
   
   this.disconnect = function() {
     redis.quit();

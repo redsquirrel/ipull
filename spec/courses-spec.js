@@ -105,6 +105,27 @@ vows.describe('courses').addBatch(setupBatch({
     }
   }
   ,
+  "create with malicious data input": {
+    topic: function(courses) {
+      courses.create({name: "Social Psychology", "plain-password": "abcdefg"}, function(err, course) {
+        this.callback(null, {courses: courses, course: course});
+      }.bind(this));
+    },
+    'does not show up in the resulting object': function(topic) {
+      assert.equal(topic.course.name, "Social Psychology");
+      assert.isUndefined(topic.course["plain-password"]);
+    },
+    'and checking directly against redis': {
+      topic: function(topic) {
+        var client = topic.courses.connection();
+        client.get("create with malicious data input:courses:"+topic.course.id+":plain-password", this.callback);
+      },
+      'does not show up': function(maliciousData) {
+        assert.isNull(maliciousData);
+      }
+    }
+  }  
+  ,
   "create with same name": {
     topic: function(courses) {
       courses.create({name: testCourseNames[0]}, function(err, course) {
