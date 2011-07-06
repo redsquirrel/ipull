@@ -69,15 +69,9 @@ vows.describe('courses').addBatch(setupBatch({
      },
      'provides both courses': function(courseData) {
        assert.length(courseData, 2);
-     }
-   }
-   ,
-   find: {
-     topic: function(courses) {
-       courses.find(1, this.callback);
      },
-     'provides the course by id': function(courseData) {
-       assert.equal(courseData.name, testCourseNames[0]);
+     'sorts by name': function(courseData) {
+       assert.equal(courseData[0].name, testCourseNames[1]);  
      }
    }
    ,

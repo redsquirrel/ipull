@@ -30,7 +30,7 @@ Dave Hoover, @redsquirrel, dave.hoover@gmail.com
 > a society which emphasizes learning instead of teaching. ...
 > Instead of the lock-step of compulsory schooling in a fixed place,
 > work in piecemeal ways to decentralize the process of learning and
-> enrich it through contact with many places and people all over the city.""
+> enrich it through contact with many places and people all over the city."
 > Christopher Alexander, [A Pattern Language][3]
 
 [0]: http://www.newcultureoflearning.com
