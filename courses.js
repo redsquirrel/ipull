@@ -156,7 +156,7 @@ module.exports.Courses = function(redis, namespace) {
       callback || function(){/*no-op*/}
     );
   }
-}
+};
 
 function eachKey(courseIds, callback) {
   courseIds.forEach(function(courseId) {

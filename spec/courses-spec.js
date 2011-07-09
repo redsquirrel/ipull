@@ -120,7 +120,7 @@ vows.describe('courses').addBatch(setupBatch({
         var client = topic.courses.connection();
         client.get("create with malicious data input:courses:"+topic.course.id+":plain-password", this.callback);
       },
-      'does not show up': function(maliciousData) {
+      'it does not show up': function(maliciousData) {
         assert.isNull(maliciousData);
       }
     }

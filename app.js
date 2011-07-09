@@ -62,6 +62,10 @@ app.get('/', function(_, res) {
   res.render('index', {title: ""});
 });
 
+app.get('/courses/new', function(_, res) {
+  res.render("courses/new", {title: "Create Your Course", course: {}});
+});
+
 app.get('/courses', setupCourses(function(_, res, courses, disconnect) {
   courses.all(function(err, courseData) {
     if (err) throw err;
@@ -77,10 +81,6 @@ app.post('/courses', setupCourses(function(req, res, courses, disconnect) {
     disconnect();
   });
 }));
-
-app.get('/courses/new', function(_, res) {
-  res.render("courses/new", {title: "Create Your Course", course: {}});
-});
 
 app.get('/courses/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
