@@ -159,6 +159,15 @@ vows.describe('courses').addBatch(setupBatch({
     }
   }
   ,
+  "updateByPermalink": {
+    topic: function(courses) {
+      courses.updateByPermalink("13th-century-mongolian-art", {summary: "The history of the steppe tribes is a very complex one."}, this.callback);
+    },
+    'provides an error': function(course) {
+      assert.equal(course.summary, "The history of the steppe tribes is a very complex one.");
+    }
+  }
+  ,
   delete: {
     topic: function(courses) {
       var callback = this.callback;

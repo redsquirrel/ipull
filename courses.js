@@ -1,8 +1,19 @@
 var sys = require("sys");
 var seo = require("./seo");
 
-var allAttributes = ["name", "permalink"];
-var safeAttributes = ["name"];
+var safeAttributes = [
+  "name",
+  "price",
+  "min-learners",
+  "max-learners",
+  "decision-date",
+  "start-date",
+  "end-date",
+  "location",
+  "summary",
+  "description"
+];
+var allAttributes = ["permalink"].concat(safeAttributes);
 
 module.exports.Courses = function(redis, namespace) {
   
@@ -25,7 +36,14 @@ module.exports.Courses = function(redis, namespace) {
       find(courseId, callback);
     });
   };
-
+  
+  this.updateByPermalink = function(permalink, data, callback) {
+    this.findByPermalink(permalink, function(error, course) {
+      setAttributes(course.id, data)
+      find(course.id, callback);
+    });
+  };
+  
   this.create = function(data, callback) {
     if (!data.name) return callback("Missing name!");
     
@@ -34,14 +52,9 @@ module.exports.Courses = function(redis, namespace) {
       
       setPermalink(data.name, courseId, 0, function() {
         redis.sadd(namespaced("courses"), courseId);
-        for (var attribute in data) {
-          if (safeAttributes.indexOf(attribute) == -1) continue;
-          redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
-        }
+        setAttributes(courseId, data);
         resetSortedCourseIds();
-        if (callback) {
-          find(courseId, callback);
-        }
+        if (callback) find(courseId, callback);
       });
     });
   };
@@ -123,6 +136,14 @@ module.exports.Courses = function(redis, namespace) {
       }
     });
   }.bind(this);
+  
+  function setAttributes(courseId, data) {
+    for (var attribute in data) {
+      if (safeAttributes.indexOf(attribute) >= 0) {
+        redis.set(namespaced("courses:"+courseId+":"+attribute), data[attribute]);
+      }
+    }
+  }
   
   function resetSortedCourseIds(callback) {
     redis.sort(

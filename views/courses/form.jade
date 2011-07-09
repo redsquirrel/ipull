@@ -1,0 +1,30 @@
+.course-input
+  label(for="course-name") Name
+  input(type="text", name="name", id="course-name", value=course.name)
+.course-input
+  label(for="course-price") Price
+  input(type="text", name="price", id="course-price")
+.course-input Learners
+  label(for="course-min-learners") min
+  input(type="text", name="min-leaners", id="course-min-learners")
+  label(for="course-max-learners") max
+  input(type="text", name="max-leaners", id="course-max-learners")
+.course-input
+  label(for="course-decision-date") Decision date
+  input(type="text", name="decision-date", id="course-decision-date")
+.course-input
+  label(for="course-start-date") Start date
+  input(type="text", name="start-date", id="course-start-date")
+.course-input
+  label(for="course-end-date") End date
+  input(type="text", name="end-date", id="course-end-date")
+.course-input
+  label(for="course-location") Location
+  input(type="text", name="location", id="course-location")
+.course-input
+  label(for="course-summary") Summary
+  textarea(name="summary", id="course-summary", rows="3", cols="30")
+.course-input
+  label(for="course-description") Description
+  textarea(name="description", id="course-description", rows="6", cols="30")= course.description
+input(type="submit") Submit

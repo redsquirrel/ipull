@@ -39,18 +39,21 @@ app.configure('production', function() {
   };
 });
 
-function setupCourses(res) {
-  var client = redisConnect(); 
-  
-  client.once('error', function(e) {
-    res.send("Something unawesome happened: " + e.message, 500);
-  });
+function setupCourses(callback) {
+  return function(req, res) {
+    var client = redisConnect(); 
 
-  client.on('error', function(e) {
-    console.log("Something unawesome happened: " + e.message);
-  }); 
+    client.once('error', function(e) {
+      res.send("Something unawesome happened: " + e.message, 500);
+    });
 
-  return new Courses(client);
+    client.on('error', function(e) {
+      console.log("Something unawesome happened: " + e.message);
+    }); 
+
+    var courses = new Courses(client);
+    callback(req, res, courses, courses.disconnect)
+  };
 }
 
 // Routes
@@ -59,23 +62,49 @@ app.get('/', function(_, res) {
   res.render('index', {title: ""});
 });
 
-app.get('/courses', function(_, res) {
-  var courses = setupCourses(res);
+app.get('/courses', setupCourses(function(_, res, courses, disconnect) {
   courses.all(function(err, courseData) {
     if (err) throw err;
-    res.render('courses/index', {courses: courseData, title: "courses"});
-    courses.disconnect();
+    res.render('courses/index', {courses: courseData, title: "Courses"});
+    disconnect();
   });
+}));
+
+app.post('/courses', setupCourses(function(req, res, courses, disconnect) {
+  courses.create(req.body, function(err, course) {
+    if (err) throw err;
+    res.redirect('/courses/' + course.permalink);
+    disconnect();
+  });
+}));
+
+app.get('/courses/new', function(_, res) {
+  res.render("courses/new", {title: "Create Your Course", course: {}});
 });
 
-app.get('/courses/:permalink', function(req, res) {
-  var courses = setupCourses(res);
+app.get('/courses/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
+  courses.findByPermalink(req.params.permalink, function(err, course) {
+    if (err) throw err;
+    res.render("courses/edit", {title: "Update " + course.name, course: course})
+    disconnect();
+  });
+}));
+
+app.post('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
+  courses.updateByPermalink(req.params.permalink, req.body, function(err, course) {
+    if (err) throw err;
+    res.redirect('/courses/' + course.permalink);
+    disconnect();
+  });
+}));
+
+app.get('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render('courses/show', {course: course, title: course.name});
-    courses.disconnect();
+    disconnect();
   });
-});
+}));
 
 app.listen(port, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  
