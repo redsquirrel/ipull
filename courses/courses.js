@@ -1,5 +1,5 @@
 var sys = require("sys");
-var seo = require("./seo");
+var seo = require("../seo");
 
 var safeAttributes = [
   "name",
