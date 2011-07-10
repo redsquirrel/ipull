@@ -1,0 +1,9 @@
+{
+    "name": "ipull-learners"
+  , "version": "0.0.1"
+  , "dependencies": {
+      "express": "2.3.12"
+    , "jade": ">= 0.0.1"
+    , "everyauth": "0.2.15"
+  }
+}

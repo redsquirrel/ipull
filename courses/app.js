@@ -59,13 +59,13 @@ function setupCourses(callback) {
 // Routes
 
 app.get('/new', function(_, res) {
-  res.render("courses/new", {title: "Create Your Course", course: {}});
+  res.render("new", {title: "Create Your Course", course: {}});
 });
 
 app.get('/', setupCourses(function(_, res, courses, disconnect) {
   courses.all(function(err, courseData) {
     if (err) throw err;
-    res.render('courses/index', {courses: courseData, title: "Courses"});
+    res.render('index', {courses: courseData, title: "Courses"});
     disconnect();
   });
 }));
@@ -73,7 +73,7 @@ app.get('/', setupCourses(function(_, res, courses, disconnect) {
 app.post('/', setupCourses(function(req, res, courses, disconnect) {
   courses.create(req.body, function(err, course) {
     if (err) throw err;
-    res.redirect('/courses/' + course.permalink);
+    res.redirect(course.permalink);
     disconnect();
   });
 }));
@@ -81,7 +81,7 @@ app.post('/', setupCourses(function(req, res, courses, disconnect) {
 app.get('/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
-    res.render("courses/edit", {title: "Update " + course.name, course: course})
+    res.render("edit", {title: "Update " + course.name, course: course})
     disconnect();
   });
 }));
@@ -89,7 +89,7 @@ app.get('/:permalink/edit', setupCourses(function(req, res, courses, disconnect)
 app.post('/:permalink', setupCourses(function(req, res, courses, disconnect) {
   courses.updateByPermalink(req.params.permalink, req.body, function(err, course) {
     if (err) throw err;
-    res.redirect('/courses/' + course.permalink);
+    res.redirect(course.permalink);
     disconnect();
   });
 }));
@@ -97,7 +97,7 @@ app.post('/:permalink', setupCourses(function(req, res, courses, disconnect) {
 app.get('/:permalink', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
-    res.render('courses/show', {course: course, title: course.name});
+    res.render('show', {course: course, title: course.name});
     disconnect();
   });
 }));

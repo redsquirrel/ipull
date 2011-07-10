@@ -1,2 +1,9 @@
-h1
-  a(href='https://github.com/redsquirrel/ipull') working to decentralize and enrich the learning process
+h1= title
+
+a(href="/courses/new").course-new Create your own Course
+
+ul.course-list
+  - courses.forEach(function(course) {
+    li
+     a(href="/courses/#{course.permalink}").course-name= course.name
+  - })

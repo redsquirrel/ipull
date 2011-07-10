@@ -1,4 +1,5 @@
 var express = require('express');
+var everyauth = require('everyauth');
 
 var app = module.exports = express.createServer();
 
@@ -26,9 +27,14 @@ app.configure('production', function() {
   if (!port) throw("Need the port!");
 });
 
-app.use(require("./learners/app"));
-app.use('/courses', require("./courses/app"));
+// Routes
 
-app.listen(port, function() {
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  
+app.get('/', function(_, res) {
+  res.render('index', {title: ""});
 });
+
+if (!module.parent) {
+  app.listen(port, function() {
+    console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  
+  });
+}
