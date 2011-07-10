@@ -4,5 +4,7 @@
   , "dependencies": {
       "express": "2.3.12"
     , "jade": ">= 0.0.1"
+    , "./learners/ipull-learners": ">= 0.0.0"
+    , "./learners/ipull-courses": ">= 0.0.0"    
   }
 }
