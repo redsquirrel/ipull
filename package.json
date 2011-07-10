@@ -4,7 +4,11 @@
   , "dependencies": {
       "express": "2.3.12"
     , "jade": ">= 0.0.1"
-    , "./learners/ipull-learners": ">= 0.0.0"
-    , "./learners/ipull-courses": ">= 0.0.0"    
+    , "everyauth": "0.2.15"
+    , "redis":   "0.6.0"
+    , "hiredis": "0.1.12"
+  }
+  , "devDependencies": {
+    "vows": "0.5.8"
   }
 }
