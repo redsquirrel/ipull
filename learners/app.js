@@ -1,29 +1,15 @@
 var express = require('express');
 var everyauth = require('everyauth');
 var redis = require('redis');
-
-var redisConnect;
+var Learners = require('./learners').Learners;
 
 function authTwitterLearner(sess, accessToken, accessSecret, twitterUser) {
-  var client = redisConnect();
-  // handle client errors
-  
+  var learners = setupLearners();
   var promise = this.Promise();
-  client.hget("learners:twitter_ids:ids", twitterUser.id, function(error, learnerId) {
-    // handle error
-    if (learnerId) {
-      promise.fulfill({id: learnerId, twitterId: twitterUser.id});
-    } else {
-      client.incr("learners:ids", function(error, learnerId) {
-        // handle error
-        client.hset("learners:twitter_ids:ids", twitterUser.id, learnerId, function(error, result) {
-          // handle error
-          promise.fulfill({id: learnerId, twitterId: twitterUser.id});
-        });
-      });
-    }
-  });
-  
+  learners.getLearnerIdByTwitterId(twitterUser.id, function(error, learnerId) {
+    if (error) throw error;
+    promise.fulfill({id: learnerId, twitterId: twitterUser.id});    
+  });  
   return promise;
 }
 
@@ -52,7 +38,7 @@ app.configure(function() {
   app.use(express.methodOverride());
 });
 
-var port;
+var port, redisConnect;
 
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -73,6 +59,13 @@ app.configure('production', function() {
     return client;
   };
 });
+
+function setupLearners() {
+  var client = redisConnect();
+  // handle client errors
+  var learners = new Learners(client);
+  return learners;
+}
 
 // Routes
 
