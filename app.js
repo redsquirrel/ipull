@@ -1,4 +1,5 @@
 var express = require('express');
+var redis = require('redis');
 
 var app = module.exports = express.createServer();
 
