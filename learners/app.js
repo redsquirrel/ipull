@@ -1,25 +1,24 @@
 var express = require('express');
 var everyauth = require('everyauth');
-var conf = require('./conf');
 var redis = require('redis');
 
 var redisConnect;
 
-function authTwitterLearner(sess, accessToken, accessSecret, twitUser) {
+function authTwitterLearner(sess, accessToken, accessSecret, twitterUser) {
   var client = redisConnect();
   // handle client errors
   
   var promise = this.Promise();
-  client.hget("learners:twitter_ids:ids", twitUser.id, function(error, learnerId) {
+  client.hget("learners:twitter_ids:ids", twitterUser.id, function(error, learnerId) {
     // handle error
     if (learnerId) {
-      promise.fulfill({id: learnerId, twitterId: twitUser.id});
+      promise.fulfill({id: learnerId, twitterId: twitterUser.id});
     } else {
       client.incr("learners:ids", function(error, learnerId) {
         // handle error
-        client.hset("learners:twitter_ids:ids", twitUser.id, learnerId, function(error, result) {
+        client.hset("learners:twitter_ids:ids", twitterUser.id, learnerId, function(error, result) {
           // handle error
-          promise.fulfill({id: learnerId, twitterId: twitUser.id});
+          promise.fulfill({id: learnerId, twitterId: twitterUser.id});
         });
       });
     }
@@ -30,8 +29,8 @@ function authTwitterLearner(sess, accessToken, accessSecret, twitUser) {
 
 everyauth
   .twitter
-    .consumerKey(conf.twit.consumerKey)
-    .consumerSecret(conf.twit.consumerSecret)
+    .consumerKey(process.env.TwitterConsumerKey)
+    .consumerSecret(process.env.TwitterConsumerSecret)
     .findOrCreateUser(authTwitterLearner)
     .redirectPath('/');
 
@@ -39,7 +38,7 @@ everyauth
 
 var app = module.exports = express.createServer(
     express.cookieParser()
-  , express.session({ secret: conf.session.secret })
+  , express.session({ secret: process.env.SessionSecret })
   , everyauth.middleware()
 );
 
