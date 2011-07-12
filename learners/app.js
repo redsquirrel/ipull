@@ -14,12 +14,13 @@ function authExternalLearner(externalSite) {
     var learners = setupLearners();
     var promise = this.Promise();
     learners.findOrCreateLearnerByExternalId(externalSite, externalData, function(error, learner) {
+      learners.disconnect();
       if (error) {
         promise.fail(error);
       } else {
         promise.fulfill(learner);
       }
-    });  
+    });
     return promise;
   }
 }
@@ -28,7 +29,10 @@ everyauth
   .everymodule
   .findUserById(function(userId, callback) {
     var learners = setupLearners();
-    learners.find(userId, callback);
+    learners.find(userId, function(error, learner) {
+      callback(error, learner);
+      learners.disconnect();
+    });
   });
   
 
