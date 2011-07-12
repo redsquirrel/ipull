@@ -5,10 +5,6 @@ function Learners(redis, namespace) {
   RedisModel.call(this, redis, namespace);
   var n = this.namespaced;
 
-  this.getLearnerIdByFacebookId = function(facebookId, callback) {
-    getLearnerIdByExternalId("facebook", facebookId, callback);
-  };
-
   this.getLearnerIdByExternalId = function(externalSite, externalId, callback) {
     redis.hget(n("learners:"+externalSite+"_ids:ids"), externalId, function(error, learnerId) {
       if (learnerId) {
@@ -27,7 +23,9 @@ function Learners(redis, namespace) {
   this.deleteAll = function(callback) {
     redis.del(n("learners:ids"), function() {
       redis.del(n("learners:facebook_ids:ids"), function() {
-        redis.del(n("learners:twitter_ids:ids"), callback);
+        redis.del(n("learners:twitter_ids:ids"), function() {
+          redis.del(n("learners:google_ids:ids"), callback);
+        });
       });
     });
   };  
