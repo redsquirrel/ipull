@@ -3,7 +3,7 @@ var RedisModel = require('../redis-model').RedisModel;
 
 function Learners(redis, namespace) {
   RedisModel.call(this, redis, namespace);
-  var n = this.namespaced;
+  var n = this._namespaced;
 
   this.getLearnerIdByExternalId = function(externalSite, externalId, callback) {
     redis.hget(n("learners:"+externalSite+"_ids:ids"), externalId, function(error, learnerId) {

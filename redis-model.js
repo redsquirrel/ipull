@@ -1,5 +1,5 @@
 function RedisModel(redis, namespace) {
-  this.namespaced = function(key) {
+  this._namespaced = function(key) {
     if (namespace) {
       return namespace + ":" + key;
     } else {

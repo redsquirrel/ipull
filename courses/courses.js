@@ -18,7 +18,7 @@ var allAttributes = ["permalink"].concat(safeAttributes);
 
 function Courses(redis, namespace) {
   RedisModel.call(this, redis, namespace);
-  var n = this.namespaced;
+  var n = this._namespaced;
   
   this.all = function(callback) {
     redis.lrange(n("course_ids_by_name"), 0, -1, function(error, courseIds) {
