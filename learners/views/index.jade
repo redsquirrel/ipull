@@ -1,7 +1,19 @@
 h1
   a(href='https://github.com/redsquirrel/ipull') working to decentralize and enrich the learning process
 
-- if (!everyauth.loggedIn)
+- if (everyauth.loggedIn)
+  h2 Authenticated
+  - if (everyauth.facebook)
+    h3 Facebook User Data
+    p= JSON.stringify(everyauth.facebook.user)
+  - if (everyauth.twitter)
+    h3 Twitter User Data
+    p= JSON.stringify(everyauth.twitter.user)
+  - if (everyauth.google)
+    h3 Google User Data
+    p= JSON.stringify(everyauth.google.user)
+
+- else
   h2 Not Authenticated
   #fb-login.fb_button(style='background-position: left -188px')
     a.fb_button_medium(href='/auth/facebook')
@@ -10,33 +22,9 @@ h1
   #twitter-login
     a(href='/auth/twitter', style='border: 0px')
       img(style='border: 0px', src='http://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_48_blue.png')
-  #linkedin-login
-    a(href='/auth/linkedin', style='border: 0px')
-      img(style='border: 0px', src='http://developer.linkedin.com/servlet/JiveServlet/showImage/102-1182-2-1063/log-in-linkedin-large.png')
   #google-login
     a(href='/auth/google', style='border: 0px')
       img(style='border: 0px', src='https://www.google.com/favicon.ico')
-  #yahoo-login
-    a(href='/auth/yahoo', style='border: 0px')
-      img(style='border: 0px', src='http://l.yimg.com/a/i/reg/openid/buttons/1_new.png')
-
-- else
-  h2 Authenticated
-  - if (everyauth.facebook)
-    h3 Facebook User Data
-    p= JSON.stringify(everyauth.facebook.user)
-  - if (everyauth.twitter)
-    h3 Twitter User Data
-    p= JSON.stringify(everyauth.twitter.user)
-  - if (everyauth.linkedin)
-    h3 LinkedIn User Data
-    p= JSON.stringify(everyauth.linkedin.user)
-  - if (everyauth.google)
-    h3 Google User Data
-    p= JSON.stringify(everyauth.google.user)
-  - if (everyauth.yahoo)
-    h3 Yahoo User Data
-    p= JSON.stringify(everyauth.yahoo.user)
 
   h3
     a(href='/logout') Logout

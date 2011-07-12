@@ -10,4 +10,8 @@ export TwitterConsumerSecret=1234abcdefg4321;
 export FacebookAppId=123markz321;
 export FacebookAppSecret=s3t3c4st0n0my;
 
+# https://code.google.com/apis/console/#project:...:access
+export GoogleAppId=54321.apps.googleusercontent.com;
+export GoogleAppSecret=pbnj-pbnj-pbnj-pbnj-pbnj;
+
 foreman start

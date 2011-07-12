@@ -36,7 +36,14 @@ everyauth
     .findOrCreateUser(authExternalLearner("twitter"))
     .redirectPath('/');
 
-// google and linkedin and yahoo...
+everyauth
+  .google
+    .appId(process.env.GoogleAppId)
+    .appSecret(process.env.GoogleAppSecret)
+    .scope('https://www.google.com/m8/feeds')
+    .handleAuthCallbackError(authDenied)
+    .findOrCreateUser(authExternalLearner("google"))
+    .redirectPath('/');
 
 var app = module.exports = express.createServer(
     express.cookieParser()
