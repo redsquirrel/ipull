@@ -12,6 +12,8 @@ h1
   - if (everyauth.google)
     h3 Google User Data
     p= JSON.stringify(everyauth.google.user)
+    h3
+      a(href='/logout') Logout
 
 - else
   h2 Not Authenticated
@@ -25,6 +27,3 @@ h1
   #google-login
     a(href='/auth/google', style='border: 0px')
       img(style='border: 0px', src='https://www.google.com/favicon.ico')
-
-  h3
-    a(href='/logout') Logout
