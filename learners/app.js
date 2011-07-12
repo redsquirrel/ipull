@@ -25,16 +25,17 @@ function authExternalLearner(externalSite) {
   }
 }
 
+function findUserById(userId, callback) {
+  var learners = setupLearners();
+  learners.find(userId, function(error, learner) {
+    callback(error, learner);
+    learners.disconnect();
+  });
+}
+
 everyauth
   .everymodule
-  .findUserById(function(userId, callback) {
-    var learners = setupLearners();
-    learners.find(userId, function(error, learner) {
-      callback(error, learner);
-      learners.disconnect();
-    });
-  });
-  
+  .findUserById(findUserById);
 
 everyauth
   .facebook
