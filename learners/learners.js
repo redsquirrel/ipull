@@ -5,14 +5,18 @@ function Learners(redis, namespace) {
   RedisModel.call(this, redis, namespace);
   var n = this.namespaced;
 
-  this.getLearnerIdByTwitterId = function(twitterId, callback) {
-    redis.hget(n("learners:twitter_ids:ids"), twitterId, function(error, learnerId) {
+  this.getLearnerIdByFacebookId = function(facebookId, callback) {
+    getLearnerIdByExternalId("facebook", facebookId, callback);
+  };
+
+  this.getLearnerIdByExternalId = function(externalSite, externalId, callback) {
+    redis.hget(n("learners:"+externalSite+"_ids:ids"), externalId, function(error, learnerId) {
       if (learnerId) {
         callback(error, learnerId);
       } else {
         redis.incr(n("learners:ids"), function(error, learnerId) {
           if (error) return callback(error);
-          redis.hset(n("learners:twitter_ids:ids"), twitterId, learnerId, function(error) {
+          redis.hset(n("learners:"+externalSite+"_ids:ids"), externalId, learnerId, function(error) {
             callback(error, learnerId);
           });
         });
@@ -22,9 +26,11 @@ function Learners(redis, namespace) {
 
   this.deleteAll = function(callback) {
     redis.del(n("learners:ids"), function() {
-      redis.del(n("learners:twitter_ids:ids"), callback);
+      redis.del(n("learners:facebook_ids:ids"), function() {
+        redis.del(n("learners:twitter_ids:ids"), callback);
+      });
     });
-  };
+  };  
 }
 
 util.inherits(Learners, RedisModel);

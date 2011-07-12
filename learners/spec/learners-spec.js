@@ -8,6 +8,8 @@ var testRedis = function() {
   return redis.createClient(53535);
 };
 
+var testTwitterId = 12345;
+
 var fixtureData = function(label, vow) {
   var namespaceLearners = function() {
     var learners = new Learners(testRedis(), label);
@@ -20,9 +22,8 @@ var fixtureData = function(label, vow) {
     }.bind(this));
   };
 
-  var testTwitterId = 12345;
   var newLearner = function(learners) {
-    learners.getLearnerIdByTwitterId(testTwitterId, function() {
+    learners.getLearnerIdByExternalId("twitter", testTwitterId, function() {
       this.callback(null, learners);
     }.bind(this));
   }
@@ -55,18 +56,18 @@ var setupBatch = function(vows) {
 };
 
 vows.describe('learners').addBatch(setupBatch({
-  'getLearnerIdByTwitterId for existing user': {
+  'getLearnerIdByExternalId for existing user': {
      topic: function(learners) {
-       learners.getLearnerIdByTwitterId(12345, this.callback);
+       learners.getLearnerIdByExternalId("twitter", testTwitterId, this.callback);
      },
      'provides the existing learner id': function(learnerId) {
        assert.equal(learnerId, 1);
      }
    }
   ,
-  'getLearnerIdByTwitterId for new user': {
+  'getLearnerIdByExternalId for new user': {
      topic: function(learners) {
-       learners.getLearnerIdByTwitterId(54321, this.callback);
+       learners.getLearnerIdByExternalId("twitter", 54321, this.callback);
      },
      'provides new learner id': function(learnerId) {
        assert.equal(learnerId, 2);

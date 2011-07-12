@@ -3,25 +3,40 @@ var everyauth = require('everyauth');
 var redis = require('redis');
 var Learners = require('./learners').Learners;
 
-function authTwitterLearner(session, accessToken, accessSecret, twitterUser) {
-  // use session and accessToken and accessSecret to persist the auth?
-  var learners = setupLearners();
-  var promise = this.Promise();
-  learners.getLearnerIdByTwitterId(twitterUser.id, function(error, learnerId) {
-    if (error) throw error;
-    promise.fulfill({id: learnerId, twitterId: twitterUser.id});    
-  });  
-  return promise;
+function authDenied(_, res) {
+  res.redirect('/');
 }
+
+function authExternalLearner(externalSite) {
+  return function(session, accessToken, accessTokExtra, externalData) {
+    // use session and accessToken and accessSecret to persist the auth?
+    var learners = setupLearners();
+    var promise = this.Promise();
+    learners.getLearnerIdByExternalId(externalSite, externalData.id, function(error, learnerId) {
+      if (error) return promise.fail(error);
+      promise.fulfill({id: learnerId, facebookId: externalData.id});    
+    });  
+    return promise;
+  }
+}
+
+everyauth
+  .facebook
+    .appId(process.env.FacebookAppId)
+    .appSecret(process.env.FacebookAppSecret)
+    .handleAuthCallbackError(authDenied)
+    .findOrCreateUser(authExternalLearner("facebook"))
+    .redirectPath('/');
 
 everyauth
   .twitter
     .consumerKey(process.env.TwitterConsumerKey)
     .consumerSecret(process.env.TwitterConsumerSecret)
-    .findOrCreateUser(authTwitterLearner)
+    // .handleAuthCallbackError(authDenied)
+    .findOrCreateUser(authExternalLearner("twitter"))
     .redirectPath('/');
 
-// facebook and google and linkedin and yahoo...
+// google and linkedin and yahoo...
 
 var app = module.exports = express.createServer(
     express.cookieParser()
