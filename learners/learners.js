@@ -1,18 +1,31 @@
+var util = require('util');
+var RedisModel = require('../redis-model').RedisModel;
 
-module.exports.Learners = function(redis) {
+function Learners(redis, namespace) {
+  RedisModel.call(this, redis, namespace);
+  var n = this.namespaced;
+
   this.getLearnerIdByTwitterId = function(twitterId, callback) {
-    redis.hget("learners:twitter_ids:ids", twitterId, function(error, learnerId) {
+    redis.hget(n("learners:twitter_ids:ids"), twitterId, function(error, learnerId) {
       if (learnerId) {
         callback(error, learnerId);
       } else {
-        redis.incr("learners:ids", function(error, learnerId) {
+        redis.incr(n("learners:ids"), function(error, learnerId) {
           if (error) return callback(error);
-          redis.hset("learners:twitter_ids:ids", twitterId, learnerId, function(error) {
+          redis.hset(n("learners:twitter_ids:ids"), twitterId, learnerId, function(error) {
             callback(error, learnerId);
           });
         });
       }
     });
   };
-};
 
+  this.deleteAll = function(callback) {
+    redis.del(n("learners:ids"), function() {
+      redis.del(n("learners:twitter_ids:ids"), callback);
+    });
+  };
+}
+
+util.inherits(Learners, RedisModel);
+module.exports.Learners = Learners;

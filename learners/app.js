@@ -3,7 +3,8 @@ var everyauth = require('everyauth');
 var redis = require('redis');
 var Learners = require('./learners').Learners;
 
-function authTwitterLearner(sess, accessToken, accessSecret, twitterUser) {
+function authTwitterLearner(session, accessToken, accessSecret, twitterUser) {
+  // use session and accessToken and accessSecret to persist the auth?
   var learners = setupLearners();
   var promise = this.Promise();
   learners.getLearnerIdByTwitterId(twitterUser.id, function(error, learnerId) {
