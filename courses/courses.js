@@ -91,10 +91,10 @@ function Courses(redis, namespace) {
   };
   
   function find(courseId, callback) {
-    redis.sismember(n("courses"), courseId, function(error, result) {
+    redis.sismember(n("courses"), courseId, function(error, courseExists) {
       if (error) return callback(error);
 
-      if (result) {
+      if (courseExists) {
         var multi = redis.multi();
         allAttributes.forEach(function(attribute) {
           multi.get(n("courses:"+courseId+":"+attribute));      

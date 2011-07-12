@@ -3,6 +3,8 @@ h1
 
 - if (everyauth.loggedIn)
   h2 Authenticated
+    h3 User Data
+    p= JSON.stringify(user)
   - if (everyauth.facebook)
     h3 Facebook User Data
     p= JSON.stringify(everyauth.facebook.user)

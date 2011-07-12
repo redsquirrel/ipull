@@ -1,6 +1,7 @@
 var express = require('express');
 var everyauth = require('everyauth');
 var redis = require('redis');
+var redisUtil = require('../redis-util');
 var Learners = require('./learners').Learners;
 
 function authDenied(_, res) {
@@ -12,13 +13,24 @@ function authExternalLearner(externalSite) {
     // use session and accessToken and accessSecret to persist the auth?
     var learners = setupLearners();
     var promise = this.Promise();
-    learners.getLearnerIdByExternalId(externalSite, externalData.id, function(error, learnerId) {
-      if (error) return promise.fail(error);
-      promise.fulfill({id: learnerId, facebookId: externalData.id});    
+    learners.findOrCreateLearnerByExternalId(externalSite, externalData, function(error, learner) {
+      if (error) {
+        promise.fail(error);
+      } else {
+        promise.fulfill(learner);
+      }
     });  
     return promise;
   }
 }
+
+everyauth
+  .everymodule
+  .findUserById(function(userId, callback) {
+    var learners = setupLearners();
+    learners.find(userId, callback);
+  });
+  
 
 everyauth
   .facebook
@@ -75,12 +87,7 @@ app.configure('production', function() {
   port = process.env.PORT;
   if (!port) throw("Need the port!");
   
-  redisConnect = function() {
-    var url   = require("url").parse(process.env.REDISTOGO_URL);
-    var client = redis.createClient(url.port, url.hostname);
-    client.auth(url.auth.split(":")[1]);
-    return client;
-  };
+  redisConnect = redisUtil.authClientCreator(process.env.REDISTOGO_URL);
 });
 
 function setupLearners() {
@@ -92,7 +99,7 @@ function setupLearners() {
 
 // Routes
 
-app.get('/', function(_, res) {
+app.get('/', function(req, res) {
   res.render('index', {title: ""});
 });
 

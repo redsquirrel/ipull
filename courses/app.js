@@ -1,6 +1,7 @@
 var express = require('express');
 var Courses = require('./courses').Courses;
 var redis = require('redis');
+var redisUtil = require('../redis-util');
 
 var app = module.exports = express.createServer();
 
@@ -31,12 +32,7 @@ app.configure('production', function() {
   port = process.env.PORT;
   if (!port) throw("Need the port!");
   
-  redisConnect = function() {
-    var url   = require("url").parse(process.env.REDISTOGO_URL);
-    var client = redis.createClient(url.port, url.hostname);
-    client.auth(url.auth.split(":")[1]);
-    return client;
-  };
+  redisConnect = redisUtil.authClientCreator(process.env.REDISTOGO_URL);
 });
 
 function setupCourses(callback) {
