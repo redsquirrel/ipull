@@ -1,4 +1,4 @@
-iPull is a social experiment inspired by a book on [The New Culture of Learning][0] and an essay on [Bad Education][1]. It is based on the assumption that in the coming years, for high school graduates interested in certain careers, there will be a shift away from universities, where in the past it had been seen as compulsory. The underlying forces of this shift will be:
+iPull is a social experiment inspired by a book on [The New Culture of Learning][0], an essay on [Bad Education][1], and backed up by Harvard's [Colleges in Crisis][4]. It is based on the assumption that in the coming years, for high school graduates interested in certain careers, there will be a shift away from universities, where in the past it had been seen as compulsory. The underlying forces of this shift will be:
 
 * The prevelance of free, high quality, easily accessible knowledge, thanks to entities like Google, Wikipedia, and [Kahn Academy][2].
 * The cost to acquire many college degrees will unquestionably outpace the typical graduate's ability to payoff the loans without severely limiting their career options.
@@ -37,3 +37,4 @@ Dave Hoover, @redsquirrel, dave.hoover@gmail.com
 [1]: http://nplusonemag.com/bad-education
 [2]: http://www.khanacademy.org
 [3]: http://en.wikipedia.org/wiki/A_Pattern_Language
+[4]: http://harvardmagazine.com/2011/07/colleges-in-crisis
