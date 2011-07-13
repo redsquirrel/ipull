@@ -5,6 +5,12 @@ var redisUtil = require('../redis-util');
 
 var app = module.exports = express.createServer();
 
+var everyauth;
+app.setupEveryauth = function(auth) {
+  auth.helpExpress(this);
+  everyauth = auth;
+}
+
 // Configuration
 
 app.configure(function() {
@@ -55,7 +61,12 @@ function setupCourses(callback) {
 // Routes
 
 app.get('/new', function(_, res) {
-  res.render("new", {title: "Create Your Course", course: {}});
+  if (everyauth.loggedIn) {
+    res.render("new", {title: "Create Your Course", course: {}});
+  } else {
+    // Uh-oh. How do I redirect to the REAL ipull root? Is it auth middleware time?
+    res.redirect("/")
+  }
 });
 
 app.get('/', setupCourses(function(_, res, courses, disconnect) {

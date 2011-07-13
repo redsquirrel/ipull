@@ -29,7 +29,7 @@ app.configure('production', function() {
 
 var learnersApp = require("./learners/app");
 var coursesApp = require("./courses/app");
-learnersApp.everyauth.helpExpress(coursesApp);
+coursesApp.setupEveryauth(learnersApp.everyauth);
 
 app.use(learnersApp);
 app.use('/courses', coursesApp);
