@@ -49,7 +49,6 @@ everyauth
   .twitter
     .consumerKey(process.env.TwitterConsumerKey)
     .consumerSecret(process.env.TwitterConsumerSecret)
-    // .handleAuthCallbackError(authDenied)
     .findOrCreateUser(authExternalLearner("twitter"))
     .redirectPath('/');
 
@@ -62,11 +61,13 @@ everyauth
     .findOrCreateUser(authExternalLearner("google"))
     .redirectPath('/');
 
-var app = module.exports = express.createServer(
+var app = module.exports.server = express.createServer(
     express.cookieParser()
   , express.session({ secret: process.env.SessionSecret })
   , everyauth.middleware()
 );
+
+module.exports.everyauth = everyauth;
 
 // Configuration
 

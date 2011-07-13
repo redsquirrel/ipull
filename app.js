@@ -27,8 +27,16 @@ app.configure('production', function() {
   if (!port) throw("Need the port!");
 });
 
-app.use(require("./learners/app"));
-app.use('/courses', require("./courses/app"));
+var learnersApp = require("./learners/app");
+var coursesApp = require("./courses/app");
+
+coursesApp.mounted(function(parent) {
+  coursesApp.use(learnersApp.everyauth);
+  learnersApp.everyauth.helpExpress(coursesApp);
+});
+
+app.use(learnersApp.server);
+app.use('/courses', coursesApp);
 
 app.listen(port, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  
