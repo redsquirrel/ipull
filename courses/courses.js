@@ -95,11 +95,11 @@ function Courses(redis, namespace) {
       if (error) return callback(error);
 
       if (courseExists) {
-        var multi = redis.multi();
+        var keys = [];
         allAttributes.forEach(function(attribute) {
-          multi.get(n("courses:"+courseId+":"+attribute));      
+          keys.push(n("courses:"+courseId+":"+attribute));
         });
-        multi.exec(function(error, courseData) {
+        redis.mget(keys, function(error, courseData) {
           callback(error, hydrate(courseData, [courseId])[0]);
         });
       } else {
@@ -125,6 +125,7 @@ function Courses(redis, namespace) {
   }.bind(this);
 
   function setAttributes(courseId, data) {
+    // How to convert this to redis.mset(...) ???
     for (var attribute in data) {
       if (safeAttributes.indexOf(attribute) >= 0) {
         redis.set(n("courses:"+courseId+":"+attribute), data[attribute]);
