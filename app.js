@@ -29,13 +29,9 @@ app.configure('production', function() {
 
 var learnersApp = require("./learners/app");
 var coursesApp = require("./courses/app");
+learnersApp.everyauth.helpExpress(coursesApp);
 
-coursesApp.mounted(function(parent) {
-  coursesApp.use(learnersApp.everyauth);
-  learnersApp.everyauth.helpExpress(coursesApp);
-});
-
-app.use(learnersApp.server);
+app.use(learnersApp);
 app.use('/courses', coursesApp);
 
 app.listen(port, function() {

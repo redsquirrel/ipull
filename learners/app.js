@@ -61,13 +61,14 @@ everyauth
     .findOrCreateUser(authExternalLearner("google"))
     .redirectPath('/');
 
-var app = module.exports.server = express.createServer(
+var app = module.exports = express.createServer(
     express.cookieParser()
   , express.session({ secret: process.env.SessionSecret })
   , everyauth.middleware()
 );
 
-module.exports.everyauth = everyauth;
+// For sharing authentication with other apps
+app.everyauth = everyauth;
 
 // Configuration
 
