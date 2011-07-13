@@ -12,5 +12,5 @@
   , "devDependencies": {
     "vows": "0.5.8"
   }
-  , "repository": "git://github.com/redsquirrel/ipull",
+  , "repository": "git://github.com/redsquirrel/ipull"
 }
