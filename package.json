@@ -1,6 +1,7 @@
 {
     "name": "ipull"
   , "version": "0.0.1"
+  , "author": "Dave Hoover <dave.hoover@gmail.com>"
   , "dependencies": {
       "express": "2.3.12"
     , "jade": ">= 0.0.1"
@@ -11,4 +12,5 @@
   , "devDependencies": {
     "vows": "0.5.8"
   }
+  , "repository": "git://github.com/redsquirrel/ipull",
 }
