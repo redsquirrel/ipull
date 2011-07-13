@@ -32,7 +32,7 @@ var coursesApp = require("./courses/app");
 coursesApp.setupEveryauth(learnersApp.everyauth);
 
 app.use(learnersApp);
-app.use('/courses', coursesApp);
+app.use(coursesApp);
 
 app.listen(port, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);  

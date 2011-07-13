@@ -58,18 +58,23 @@ function setupCourses(callback) {
   };
 }
 
+function authenticate(req, res, callback) {
+  if (req.loggedIn) {
+    callback();
+  } else {
+    res.redirect("/"); // need an alert to login; also store the target for redirect
+  }
+}
+
 // Routes
 
-app.get('/new', function(_, res) {
-  if (everyauth.loggedIn) {
+app.get('/courses/new', function(req, res) {
+  authenticate(req, res, function() {
     res.render("new", {title: "Create Your Course", course: {}});
-  } else {
-    // Uh-oh. How do I redirect to the REAL ipull root? Is it auth middleware time?
-    res.redirect("/")
-  }
+  });
 });
 
-app.get('/', setupCourses(function(_, res, courses, disconnect) {
+app.get('/courses', setupCourses(function(_, res, courses, disconnect) {
   courses.all(function(err, courseData) {
     if (err) throw err;
     res.render('index', {courses: courseData, title: "Courses"});
@@ -77,15 +82,17 @@ app.get('/', setupCourses(function(_, res, courses, disconnect) {
   });
 }));
 
-app.post('/', setupCourses(function(req, res, courses, disconnect) {
-  courses.create(req.body, function(err, course) {
-    if (err) throw err;
-    res.redirect(course.permalink);
-    disconnect();
+app.post('/courses', setupCourses(function(req, res, courses, disconnect) {
+  authenticate(req, res, function() {
+    courses.create(req.body, function(err, course) {
+      if (err) throw err;
+      res.redirect("/courses/" + course.permalink);
+      disconnect();
+    });    
   });
 }));
 
-app.get('/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
+app.get('/courses/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render("edit", {title: "Update " + course.name, course: course})
@@ -93,15 +100,15 @@ app.get('/:permalink/edit', setupCourses(function(req, res, courses, disconnect)
   });
 }));
 
-app.post('/:permalink', setupCourses(function(req, res, courses, disconnect) {
+app.post('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
   courses.updateByPermalink(req.params.permalink, req.body, function(err, course) {
     if (err) throw err;
-    res.redirect(course.permalink);
+    res.redirect("/courses/" + course.permalink);
     disconnect();
   });
 }));
 
-app.get('/:permalink', setupCourses(function(req, res, courses, disconnect) {
+app.get('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render('show', {course: course, title: course.name});
