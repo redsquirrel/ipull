@@ -46,10 +46,9 @@ app.use(redisClient.errorResponse);
 
 var courses = new Courses(redisClient);
 
-// Need to make this suck less, by using middleware or exceptions
-function authenticate(req, res, callback) {
+function protect(req, res, next) {
   if (req.loggedIn) {
-    callback();
+    next();
   } else {
     res.redirect("/"); // need an alert to login; also store the target for redirect
   }
@@ -57,10 +56,8 @@ function authenticate(req, res, callback) {
 
 // Routes
 
-app.get('/courses/new', function(req, res) {
-  authenticate(req, res, function() {
-    res.render("new", {title: "Create Your Course", course: {}});
-  });
+app.get('/courses/new', protect, function(req, res) {
+  res.render("new", {title: "Create Your Course", course: {}});
 });
 
 app.get('/courses', function(_, res) {
@@ -70,12 +67,10 @@ app.get('/courses', function(_, res) {
   });
 });
 
-app.post('/courses', function(req, res) {
-  authenticate(req, res, function() {
+app.post('/courses', protect, function(req, res) {
   courses.create(req.body, function(err, course) {
-      if (err) throw err;
-      res.redirect("/courses/" + course.permalink);
-    });
+    if (err) throw err;
+    res.redirect("/courses/" + course.permalink);
   });
 });
 
