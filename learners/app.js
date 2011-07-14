@@ -23,9 +23,13 @@ function authExternalLearner(externalSite) {
   }
 }
 
+function findUserById(userId, callback) {
+  return learners.find(userId, callback);
+}
+
 everyauth
   .everymodule
-  .findUserById(learners.find);
+  .findUserById(findUserById);
 
 everyauth
   .facebook
