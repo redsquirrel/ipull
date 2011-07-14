@@ -1,5 +1,5 @@
 var util = require('util');
-var RedisModel = require('../redis-model').RedisModel;
+var RedisModel = require('../redis-model');
 var seo = require('../seo');
 
 var safeAttributes = [
@@ -16,9 +16,9 @@ var safeAttributes = [
 ];
 var allAttributes = ["permalink"].concat(safeAttributes);
 
-function Courses(redis, namespace) {
+module.exports = Courses = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
-  var n = this._namespaced;
+  var n = require("../redis-util").namespaced(namespace);
   
   this.all = function(callback) {
     redis.lrange(n("course_ids_by_name"), 0, -1, function(error, courseIds) {
@@ -169,4 +169,3 @@ function hydrate(courseData, courseIds) {
 }
 
 util.inherits(Courses, RedisModel);
-module.exports.Courses = Courses;

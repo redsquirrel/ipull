@@ -2,7 +2,7 @@ var assert = require('assert');
 var redis = require('redis');
 var vows = require('vows');
 
-var Learners = require('../learners').Learners;
+var Learners = require('../learners');
 
 var testRedis = function() {
   return redis.createClient(53535);

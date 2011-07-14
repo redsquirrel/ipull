@@ -1,9 +1,9 @@
 var util = require('util');
-var RedisModel = require('../redis-model').RedisModel;
+var RedisModel = require('../redis-model');
 
-function Learners(redis, namespace) {
+module.exports = Learners = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
-  var n = this._namespaced;
+  var n = require("../redis-util").namespaced(namespace);
 
   this.find = function(id, callback) {
     redis.sismember(n("learners"), id, function(error, learnerExists) {
@@ -68,7 +68,6 @@ function Learners(redis, namespace) {
       redis.set(n("learners:"+learnerId+":"+attribute), dataToStore[attribute]);
     }
   }
-}
+};
 
 util.inherits(Learners, RedisModel);
-module.exports.Learners = Learners;

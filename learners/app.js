@@ -2,7 +2,7 @@ var express = require('express');
 var everyauth = require('everyauth');
 var redis = require('redis');
 var redisUtil = require('../redis-util');
-var Learners = require('./learners').Learners;
+var Learners = require('./learners');
 
 function authDenied(_, res) {
   res.redirect('/');
@@ -11,7 +11,6 @@ function authDenied(_, res) {
 function authExternalLearner(externalSite) {
   return function(session, accessToken, accessTokExtra, externalData) {
     // use session and accessToken and accessSecret to persist the auth?
-    var learners = setupLearners();
     var promise = this.Promise();
     learners.findOrCreateLearnerByExternalId(externalSite, externalData, function(error, learner) {
       learners.disconnect();
@@ -26,7 +25,6 @@ function authExternalLearner(externalSite) {
 }
 
 function findUserById(userId, callback) {
-  var learners = setupLearners();
   learners.find(userId, function(error, learner) {
     callback(error, learner);
     learners.disconnect();
@@ -97,12 +95,10 @@ app.configure('production', function() {
   redisConnect = redisUtil.authClientCreator(process.env.REDISTOGO_URL);
 });
 
-function setupLearners() {
-  var client = redisConnect();
-  // handle client errors
-  var learners = new Learners(client);
-  return learners;
-}
+var redisClient = redisUtil.setup(redisConnect);
+app.use(redisClient.errorResponse);
+
+var learners = new Learners(redisClient);
 
 // Routes
 

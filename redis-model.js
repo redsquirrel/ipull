@@ -1,4 +1,4 @@
-function RedisModel(redis, namespace) {
+module.exports = RedisModel = function(redis, namespace) {
   this._namespaced = function(key) {
     if (namespace) {
       return namespace + ":" + key;
@@ -15,5 +15,3 @@ function RedisModel(redis, namespace) {
     redis.quit();
   };
 }
-
-module.exports.RedisModel = RedisModel;

@@ -1,11 +1,11 @@
 var express = require('express');
-var Courses = require('./courses').Courses;
+var Courses = require('./courses');
 var redis = require('redis');
 var redisUtil = require('../redis-util');
 
 var app = module.exports = express.createServer();
 
-var everyauth;
+var everyauth; // how to make this optional? so that the app can run standalone.
 app.setupEveryauth = function(auth) {
   auth.helpExpress(this);
   everyauth = auth;
@@ -41,23 +41,12 @@ app.configure('production', function() {
   redisConnect = redisUtil.authClientCreator(process.env.REDISTOGO_URL);
 });
 
-function setupCourses(callback) {
-  return function(req, res) {
-    var client = redisConnect(); 
+var redisClient = redisUtil.setup(redisConnect);
+app.use(redisClient.errorResponse);
 
-    client.once('error', function(e) {
-      res.send("Something unawesome happened: " + e.message, 500);
-    });
+var courses = new Courses(redisClient);
 
-    client.on('error', function(e) {
-      console.log("Something unawesome happened: " + e.message);
-    }); 
-
-    var courses = new Courses(client);
-    callback(req, res, courses, courses.disconnect)
-  };
-}
-
+// Need to make this suck less, by using middleware or exceptions
 function authenticate(req, res, callback) {
   if (req.loggedIn) {
     callback();
@@ -74,47 +63,42 @@ app.get('/courses/new', function(req, res) {
   });
 });
 
-app.get('/courses', setupCourses(function(_, res, courses, disconnect) {
+app.get('/courses', function(_, res) {
   courses.all(function(err, courseData) {
     if (err) throw err;
     res.render('index', {courses: courseData, title: "Courses"});
-    disconnect();
   });
-}));
+});
 
-app.post('/courses', setupCourses(function(req, res, courses, disconnect) {
+app.post('/courses', function(req, res) {
   authenticate(req, res, function() {
-    courses.create(req.body, function(err, course) {
+  courses.create(req.body, function(err, course) {
       if (err) throw err;
       res.redirect("/courses/" + course.permalink);
-      disconnect();
-    });    
+    });
   });
-}));
+});
 
-app.get('/courses/:permalink/edit', setupCourses(function(req, res, courses, disconnect) {
+app.get('/courses/:permalink/edit', function(req, res) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render("edit", {title: "Update " + course.name, course: course})
-    disconnect();
   });
-}));
+});
 
-app.post('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
+app.post('/courses/:permalink', function(req, res) {
   courses.updateByPermalink(req.params.permalink, req.body, function(err, course) {
     if (err) throw err;
     res.redirect("/courses/" + course.permalink);
-    disconnect();
   });
-}));
+});
 
-app.get('/courses/:permalink', setupCourses(function(req, res, courses, disconnect) {
+app.get('/courses/:permalink', function(req, res) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render('show', {course: course, title: course.name});
-    disconnect();
   });
-}));
+});
 
 if (!module.parent) {
   app.listen(port, function() {
