@@ -13,7 +13,6 @@ function authExternalLearner(externalSite) {
     // use session and accessToken and accessSecret to persist the auth?
     var promise = this.Promise();
     learners.findOrCreateLearnerByExternalId(externalSite, externalData, function(error, learner) {
-      learners.disconnect();
       if (error) {
         promise.fail(error);
       } else {
@@ -24,16 +23,9 @@ function authExternalLearner(externalSite) {
   }
 }
 
-function findUserById(userId, callback) {
-  learners.find(userId, function(error, learner) {
-    callback(error, learner);
-    learners.disconnect();
-  });
-}
-
 everyauth
   .everymodule
-  .findUserById(findUserById);
+  .findUserById(learners.find);
 
 everyauth
   .facebook
