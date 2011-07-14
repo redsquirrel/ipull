@@ -9,7 +9,8 @@ module.exports.authClientCreator = function(redisUrl) {
 
 module.exports.setup = function(redisConnect) {
   var redisOnline = false;
-  var client = redisConnect(); 
+  var client = redisConnect();
+  
   client.on('connect', function() {
     console.log("Something AWESOME happened: WE HAZ REDIS!");
     redisOnline = true;
@@ -21,11 +22,11 @@ module.exports.setup = function(redisConnect) {
   process.on("exit", client.quit);
   
   client.isOnline = function() { return redisOnline; };
-  client.errorResponse = function(req, res, next) {
-    if (client.isOnline()) {
+  client.errorResponse = function(_, res, next) {
+    if (redisOnline) {
       next();
     } else {
-      res.send("Something unawesome happened. (Redis is temporarily unavailable.)");
+      res.send("Something unawesome happened. (Redis is temporarily unavailable.)", 500);
     }
   }
   
