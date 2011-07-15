@@ -5,5 +5,7 @@ html(lang="en")
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     - if (everyauth.loggedIn)
-      p Hi #{user.name}
+      p
+        | Hi #{user.name},
+        a(href='/logout') Logout
     != body

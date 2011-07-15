@@ -37,14 +37,14 @@ everyauth
     .appSecret(process.env.FacebookAppSecret)
     .handleAuthCallbackError(authDenied)
     .findOrCreateUser(authExternalLearner("facebook"))
-    .redirectPath('/');
+    .redirectPath('/courses');
 
 everyauth
   .twitter
     .consumerKey(process.env.TwitterConsumerKey)
     .consumerSecret(process.env.TwitterConsumerSecret)
     .findOrCreateUser(authExternalLearner("twitter"))
-    .redirectPath('/');
+    .redirectPath('/courses');
 
 everyauth
   .google
@@ -53,7 +53,7 @@ everyauth
     .scope('https://www.google.com/m8/feeds')
     .handleAuthCallbackError(authDenied)
     .findOrCreateUser(authExternalLearner("google"))
-    .redirectPath('/');
+    .redirectPath('/courses');
 
 var app = module.exports = express.createServer(
     express.cookieParser()
@@ -63,8 +63,6 @@ var app = module.exports = express.createServer(
 
 // For sharing authentication with other apps
 app.everyauth = everyauth;
-
-// Configuration
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
@@ -96,10 +94,12 @@ app.use(redisClient.errorResponse);
 
 var learners = new Learners(redisClient);
 
-// Routes
-
 app.get('/', function(req, res) {
-  res.render('index', {title: ""});
+  if (req.loggedIn) {
+    res.redirect("/courses");
+  } else {
+    res.render('index', {title: ""});
+  }
 });
 
 everyauth.helpExpress(app);

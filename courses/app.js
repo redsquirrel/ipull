@@ -5,13 +5,23 @@ var redisUtil = require('../redis-util');
 
 var app = module.exports = express.createServer();
 
-var everyauth; // how to make this optional? so that the app can run standalone.
+var everyauth;
 app.setupEveryauth = function(auth) {
   auth.helpExpress(this);
   everyauth = auth;
 }
 
-// Configuration
+function allowForMissingEveryauth(req, res, next) {
+  if (!everyauth) {
+    req.loggedIn = true;
+    app.helpers({
+      user: {name: "Joe Example"},
+      everyauth: {loggedIn: true}
+    });
+  }
+  next();
+}
+app.use(allowForMissingEveryauth);
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
@@ -53,8 +63,6 @@ function protect(req, res, next) {
     res.redirect("/"); // need an alert to login; also store the target for redirect
   }
 }
-
-// Routes
 
 app.get('/courses/new', protect, function(req, res) {
   res.render("new", {title: "Create Your Course", course: {}});
