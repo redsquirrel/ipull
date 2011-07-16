@@ -27,15 +27,22 @@ function findUserById(userId, callback) {
   return learners.find(userId, callback);
 }
 
+function everyauthErrback(err, data) {
+  if (!data) {
+    console.log(err);
+    throw err;
+  }
+  if (!data.req.errored) {
+    data.res.send("Something bad happened during authentication! " + err, 500);
+    data.req.errored = true;      
+  }
+}
+
 everyauth
   .everymodule
   .findUserById(findUserById)
-  .moduleErrback(function (err, data) {
-    if (!data.req.errored) {
-      data.res.send("Something bad happened during authentication! " + err, 500);
-      data.req.errored = true;      
-    }
-  });;
+  .moduleTimeout(10000)
+  .moduleErrback(everyauthErrback);
 
 everyauth
   .facebook
