@@ -29,7 +29,13 @@ function findUserById(userId, callback) {
 
 everyauth
   .everymodule
-  .findUserById(findUserById);
+  .findUserById(findUserById)
+  .moduleErrback(function (err, data) {
+    if (!data.req.errored) {
+      data.res.send("Something bad happened during authentication! " + err, 500);
+      data.req.errored = true;      
+    }
+  });;
 
 everyauth
   .facebook

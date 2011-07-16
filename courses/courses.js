@@ -12,9 +12,12 @@ var safeAttributes = [
   "end-date",
   "location",
   "summary",
-  "description"
+  "description",
+  "creator-id",
+  "updater-id"
 ];
 var allAttributes = ["permalink"].concat(safeAttributes);
+var requiredAttributes = ["name", "creator-id"];
 
 module.exports = Courses = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
@@ -41,14 +44,27 @@ module.exports = Courses = function(redis, namespace) {
   };
   
   this.updateByPermalink = function(permalink, data, callback) {
+    if (!data["updater-id"]) return callback({missing: "updater-id"});
+    
     this.findByPermalink(permalink, function(error, course) {
-      setAttributes(course.id, data)
-      find(course.id, callback);
+      redis.lpush(n("courses:"+course.id+":updates"), JSON.stringify(data), function(error, result) {
+        if (error) throw error;
+        setAttributes(course.id, data);
+        find(course.id, callback);
+      });
     });
   };
   
   this.create = function(data, callback) {
-    if (!data.name) return callback("Missing name!");
+    var missing = [];
+    requiredAttributes.forEach(function(attribute) {
+      if (!data[attribute]) {
+        missing.push(attribute);
+      }
+    });
+    if (missing.length > 0) {
+      return callback({missing: missing});
+    }
 
     redis.incr(n("courses:ids"), function(error, courseId) {      
       if (error && callback) return callback(error);

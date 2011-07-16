@@ -27,7 +27,7 @@ var fixtureData = function(label, vow) {
 
   var courseCounter = 0;
   var newCourse = function(courses) {
-    courses.create({name: testCourseNames[courseCounter++]}, function() {
+    courses.create({name: testCourseNames[courseCounter++], "creator-id": 53}, function() {
       this.callback(null, courses);
     }.bind(this));
   }
@@ -86,7 +86,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   create: {
     topic: function(courses) {
-      courses.create({name: "Social Psychology"}, function(err, course) {
+      courses.create({name: "Social Psychology", "creator-id": 53}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -101,13 +101,16 @@ vows.describe('courses').addBatch(setupBatch({
       },
       'so there are now three courses': function(topic) {
         assert.length(topic.courses, 3);
+      },
+      "stores the learner's id": function(topic) {
+        assert.equal(topic.course["creator-id"], 53);
       }
     }
   }
   ,
   "create with malicious data input": {
     topic: function(courses) {
-      courses.create({name: "Social Psychology", "plain-password": "abcdefg"}, function(err, course) {
+      courses.create({name: "Social Psychology", "plain-password": "abcdefg", "creator-id": 53}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -128,7 +131,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "create with same name": {
     topic: function(courses) {
-      courses.create({name: testCourseNames[0]}, function(err, course) {
+      courses.create({name: testCourseNames[0], "creator-id": 53}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -137,7 +140,7 @@ vows.describe('courses').addBatch(setupBatch({
     },
     'twice': {
       topic: function(topic) {
-        topic.courses.create({name: testCourseNames[0]}, function(err, course) {
+        topic.courses.create({name: testCourseNames[0], "creator-id": 53}, function(err, course) {
           this.callback(null, {courses: topic.courses, course: course});
         }.bind(this));
       },
@@ -147,24 +150,63 @@ vows.describe('courses').addBatch(setupBatch({
     }
   }
   ,
-  "create without a name": {
+  "create without a learner": {
     topic: function(courses) {
-      this.callback(null, courses);
+      courses.create({name: "Bypassing authentication for fun and profit"}, function(err, course) {
+        this.callback(null, {err: err, course: course})
+      }.bind(this));
     },
-    'provides an error': function(courses) {
-      courses.create({foo: "bar"}, function(err, course) {
-        assert.ok(err);
-        assert.isUndefined(course);
-      });      
+    'provides an error': function(testData) {
+      assert.ok(testData.err);
+      assert.isUndefined(testData.course);
     }
   }
   ,
-  "updateByPermalink": {
+  "create without a name": {
     topic: function(courses) {
-      courses.updateByPermalink("13th-century-mongolian-art", {summary: "The history of the steppe tribes is a very complex one."}, this.callback);
+      courses.create({"creator-id": 53}, function(err, course) {
+        this.callback(null, {err: err, course: course})
+      }.bind(this));
     },
-    'provides an error': function(course) {
-      assert.equal(course.summary, "The history of the steppe tribes is a very complex one.");
+    'provides an error': function(testData) {
+      assert.ok(testData.err);
+      assert.isUndefined(testData.course);
+    }
+  }
+  ,
+  updateByPermalink: {
+    topic: function(courses) {
+      courses.updateByPermalink("13th-century-mongolian-art", {
+        summary: "The history of the steppe tribes is a very complex one.",
+        "updater-id": 53
+      }, function(error, course) {
+        this.callback(error, {course: course, courses: courses});
+      }.bind(this));
+    },
+    'saves the new summary': function(topic) {
+      assert.equal(topic.course.summary, "The history of the steppe tribes is a very complex one.");
+    },
+    'saves the learner': function(topic) {
+      assert.equal(topic.course["updater-id"], 53);
+    },
+    'audits the update': {
+      topic: function(topic) {
+        topic.courses.connection().llen("updateByPermalink:courses:"+topic.course.id+":updates", this.callback);;
+      },
+      'by adding to an "updates" list': function(updateListLength) {
+        assert.equal(updateListLength, 1);
+      }
+    }
+  }
+  ,
+  "updateByPermalink without updater": {
+    topic: function(courses) {
+      courses.updateByPermalink("13th-century-mongolian-art", { summary: "What, what?" }, function(error, course) {
+        this.callback(null, {error: error, course: course});
+      }.bind(this));
+    },
+    'provides an error': function(testData) {
+      assert.ok(testData.error);
     }
   }
   ,

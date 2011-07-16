@@ -15,7 +15,7 @@ function allowForMissingEveryauth(req, res, next) {
   if (!everyauth) {
     req.loggedIn = true;
     app.helpers({
-      user: {name: "Joe Example"},
+      user: {name: "Joe Example", id: 53},
       everyauth: {loggedIn: true}
     });
   }
@@ -76,21 +76,25 @@ app.get('/courses', function(_, res) {
 });
 
 app.post('/courses', protect, function(req, res) {
-  courses.create(req.body, function(err, course) {
+  var courseData = req.body;
+  courseData["creator-id"] = req.user.id;
+  courses.create(courseData, function(err, course) {
     if (err) throw err;
     res.redirect("/courses/" + course.permalink);
   });
 });
 
-app.get('/courses/:permalink/edit', function(req, res) {
+app.get('/courses/:permalink/edit', protect, function(req, res) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render("edit", {title: "Update " + course.name, course: course})
   });
 });
 
-app.post('/courses/:permalink', function(req, res) {
-  courses.updateByPermalink(req.params.permalink, req.body, function(err, course) {
+app.post('/courses/:permalink', protect, function(req, res) {
+  var courseData = req.body;
+  courseData["updater-id"] = req.user.id;
+  courses.updateByPermalink(req.params.permalink, courseData, function(err, course) {
     if (err) throw err;
     res.redirect("/courses/" + course.permalink);
   });
