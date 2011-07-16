@@ -88,4 +88,4 @@ vows.describe('learners').addBatch(setupBatch({
         assert.equal(learner.name, "dave.hoover@gmail.com");
       }
     }
-})).run();
+})).export(module);

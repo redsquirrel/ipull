@@ -1,4 +1,19 @@
 h1.course-name= course.name
 
-//- LAY IT OUT SEMANTICALLY, AND LOGICALLY
-#course-description= course.description
+h2.course-summary= course.summary
+
+p.buy $
+  = course.price
+  | 
+  input(type='submit', value='Learn!')
+
+p.learners-to-go
+  = course.learnersNeeded()
+  | 
+  | more learners needed!
+
+p.time-left
+  | Time left to join
+  = course.timeToJoin()
+
+p.course-description= course.description

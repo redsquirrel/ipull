@@ -224,4 +224,4 @@ vows.describe('courses').addBatch(setupBatch({
       }      
     }
   }
-})).run();
+})).export(module);

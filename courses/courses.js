@@ -1,5 +1,6 @@
 var util = require('util');
 var RedisModel = require('../redis-model');
+var Course = require('./course');
 var seo = require('../seo');
 
 var safeAttributes = [
@@ -175,7 +176,7 @@ function hydrate(courseData, courseIds) {
   var courses = [];
   var courseIdCounter = 0;
   for (var c = 0; c < courseData.length; c += allAttributes.length) {
-    var course = {id: courseIds[courseIdCounter++]};
+    var course = new Course(courseIds[courseIdCounter++]);
     for (var a = 0; a < allAttributes.length; a++) {
       course[allAttributes[a]] = courseData[c+a];
     }
