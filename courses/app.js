@@ -6,9 +6,9 @@ var redisUtil = require('../redis-util');
 var app = module.exports = express.createServer();
 
 var everyauth;
-app.setupEveryauth = function(auth) {
-  auth.helpExpress(this);
-  everyauth = auth;
+app.setupEveryauth = function(a) {
+  everyauth = a;
+  everyauth.helpExpress(this);
 }
 
 function allowForMissingEveryauth(req, res, next) {
@@ -68,13 +68,6 @@ app.get('/courses/new', protect, function(req, res) {
   res.render("new", {title: "Create Your Course", course: {}});
 });
 
-app.get('/courses', function(_, res) {
-  courses.all(function(err, courseData) {
-    if (err) throw err;
-    res.render('index', {courses: courseData, title: "Courses"});
-  });
-});
-
 app.post('/courses', protect, function(req, res) {
   var courseData = req.body;
   courseData["creator-id"] = req.user.id;
@@ -97,6 +90,26 @@ app.post('/courses/:permalink', protect, function(req, res) {
   courses.updateByPermalink(req.params.permalink, courseData, function(err, course) {
     if (err) throw err;
     res.redirect("/courses/" + course.permalink);
+  });
+});
+
+app.get('/learning', protect, function(_, res) {
+  courses.allByLearnerId(req.user.id, function(err, courseData) {
+    res.render('index', {courses: courseData, title: "Stuff I'm Learning About"});      
+  });
+});
+
+app.post('/learning/:permalink', protect, function(req, res) {
+  courses.addLearnerToCourse(req.user.id, req.params.permalink, function(err, course) {
+    if (err) throw err;
+    res.redirect("/courses/" + req.params.permalink);
+  });
+});
+
+app.get('/courses', function(_, res) {
+  courses.all(function(err, courseData) {
+    if (err) throw err;
+    res.render('index', {courses: courseData, title: "Courses"});
   });
 });
 

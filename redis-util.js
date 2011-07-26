@@ -21,7 +21,6 @@ module.exports.setup = function(redisConnect) {
   });
   process.on("exit", client.quit);
   
-  client.isOnline = function() { return redisOnline; };
   client.errorResponse = function(_, res, next) {
     if (redisOnline) {
       next();

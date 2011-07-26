@@ -13,6 +13,8 @@ var testCourseNames = [
   "13th Century Mongolian Art"
 ];
 
+var testCourseCreators = [53, 80];
+
 var fixtureData = function(label, vow) {
   var namespaceCourses = function() {
     var courses = new Courses(testRedis(), label);
@@ -27,7 +29,8 @@ var fixtureData = function(label, vow) {
 
   var courseCounter = 0;
   var newCourse = function(courses) {
-    courses.create({name: testCourseNames[courseCounter++], "creator-id": 53}, function() {
+    var count = courseCounter++;
+    courses.create({name: testCourseNames[count], "creator-id": testCourseCreators[count]}, function() {
       this.callback(null, courses);
     }.bind(this));
   }
@@ -72,6 +75,9 @@ vows.describe('courses').addBatch(setupBatch({
      },
      'sorts by name': function(courseData) {
        assert.equal(courseData[0].name, testCourseNames[1]);  
+     },
+     'populates the data correctly': function(courseData) {
+       assert.equal(courseData[0]["creator-id"], testCourseCreators[1]);  
      }
    }
    ,
@@ -79,10 +85,45 @@ vows.describe('courses').addBatch(setupBatch({
      topic: function(courses) {
        courses.findByPermalink("thoreau-21st-century", this.callback);
      },
-     'provides the course by name': function(courseData) {
-       assert.equal(courseData.name, testCourseNames[0]);
+     'provides the course by name': function(course) {
+       assert.equal(course.name, testCourseNames[0]);
+     },
+     'provides the number of learners': function(course) {
+       assert.equal(course["learner-count"], 0);
      }
    }
+  ,
+  addLearnerToCourse: {
+    topic: function(courses) {
+      courses.addLearnerToCourse(80, "thoreau-21st-century", function() {
+        this.callback(null, courses)
+      }.bind(this));
+    },
+    'shows a greater number of learners': {
+      topic: function(courses) {
+        courses.findByPermalink("thoreau-21st-century", this.callback);
+      },
+      'after the course has been reloaded': function(course) {
+        assert.equal(course["learner-count"], 1);
+      }
+    }
+  }
+  ,
+  allByLearnerId: {
+    topic: function(courses) {
+      courses.addLearnerToCourse(80, "thoreau-21st-century", function() {
+        this.callback(null, courses)
+      }.bind(this));
+    },
+    'shows all courses': {
+      topic: function(courses) {
+        courses.allByLearnerId(80, this.callback);
+      },
+      'for a specific learner': function(courseData) {
+        assert.length(courseData, 1);
+      }
+    }
+  }
   ,
   create: {
     topic: function(courses) {

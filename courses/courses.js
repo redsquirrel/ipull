@@ -24,22 +24,48 @@ module.exports = Courses = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
   var n = require("../redis-util").namespaced(namespace);
   
-  this.all = function(callback) {
-    redis.lrange(n("course_ids_by_name"), 0, -1, function(error, courseIds) {
+  this.allByLearnerId = function(learnerId, callback) {
+    this.all("course-ids-by-name:learner:"+learnerId, callback);
+  };
+  
+  this.addLearnerToCourse = function(learnerId, permalink, callback) {
+    this.findByPermalink(permalink, function(error, course) {
       if (error) return callback(error);
-
-      var multi = redis.multi();
-      eachKey(courseIds, function(courseId, attribute) {
-        multi.get(n("courses:"+courseId+":"+attribute));
+      redis.sadd(n("courses:"+course.id+":learners"), learnerId, function(error) {
+        if (error) return callback(error);
+        redis.sadd(n("learner:"+learnerId+":courses"), course.id, function(error) {
+          if (error) return callback(error);
+          resetSortedCourseIds(
+            "learner:"+learnerId+":courses",
+            "course-ids-by-name:learner:"+learnerId,
+            callback
+          );
+        });
       });
-      multi.exec(function(error, courseData) {
+    });
+  };
+  
+  this.all = function(/* sortedListKey?, callback */) {
+    var sortedListKey = arguments[1] ? arguments[0] : "course-ids-by-name";
+    var callback = arguments[1] || arguments[0];
+
+    redis.lrange(n(sortedListKey), 0, -1, function(error, courseIds) {
+      if (error) return callback(error);
+      if (courseIds.length == 0) return callback(null, []);
+      
+      var keys = [];
+      eachKey(courseIds, function(courseId, attribute) {
+        keys.push(n("courses:"+courseId+":"+attribute));
+      });
+      redis.mget(keys, function(error, courseData) {
         callback(error, hydrate(courseData, courseIds));
       });
     });
   };
   
   this.findByPermalink = function(permalink, callback) {
-    redis.hget(n("courses:permalinks:ids"), permalink, function(err, courseId) {
+    redis.hget(n("courses:permalinks:ids"), permalink, function(error, courseId) {
+      if (error) return callback(error);
       find(courseId, callback);
     });
   };
@@ -51,6 +77,7 @@ module.exports = Courses = function(redis, namespace) {
       redis.lpush(n("courses:"+course.id+":updates"), JSON.stringify(data), function(error, result) {
         if (error) throw error;
         setAttributes(course.id, data);
+        resetSortedCourseIds();
         find(course.id, callback);
       });
     });
@@ -98,7 +125,7 @@ module.exports = Courses = function(redis, namespace) {
         this.delete(courseId);
       }.bind(this));
       redis.del(n("courses"), function() {
-        redis.del(n("course_ids_by_name"), function() {
+        redis.del(n("course-ids-by-name"), function() {
           redis.del(n("courses:ids"), function() {
             redis.del(n("courses:permalinks:ids"), callback);
           });
@@ -116,8 +143,13 @@ module.exports = Courses = function(redis, namespace) {
         allAttributes.forEach(function(attribute) {
           keys.push(n("courses:"+courseId+":"+attribute));
         });
-        redis.mget(keys, function(error, courseData) {
-          callback(error, hydrate(courseData, [courseId])[0]);
+        var multi = redis.multi();
+        multi.mget(keys);
+        multi.scard(n("courses:"+courseId+":learners"));
+        multi.exec(function(error, courseData) {
+          var course = hydrate(courseData[0], [courseId])[0];
+          course["learner-count"] = courseData[1];
+          callback(error, course);
         });
       } else {
         callback();
@@ -150,14 +182,18 @@ module.exports = Courses = function(redis, namespace) {
     }
   };
 
-  function resetSortedCourseIds(callback) {
+  function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback */) {
+    var readSetKey = arguments[2] ? arguments[0] : "courses";
+    var storeListKey = arguments[2] ? arguments[1] : "course-ids-by-name";
+    var callback = arguments[2] || arguments[0];
+    
     redis.sort(
-      n("courses"),
+      n(readSetKey),
       "BY",
       n("courses:*:name"),
-      "ALPHA",
+      "ALPHA", // how to make it case-insensitive?
       "STORE",
-      n("course_ids_by_name"),
+      n(storeListKey),
       callback || function(){/*no-op*/}
     );
   }

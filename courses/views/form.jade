@@ -4,7 +4,8 @@
 .course-input
   label(for="course-price") Price
   input(type="text", name="price", id="course-price", value=course.price)
-.course-input Learners
+.course-input
+  | Learners
   label(for="course-min-learners") min
   input(type="text", name="min-learners", id="course-min-learners", value=course['min-learners'])
   label(for="course-max-learners") max
