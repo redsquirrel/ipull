@@ -7,10 +7,10 @@ vows.describe('courses').addBatch({
     topic: function() {
       var course = new Course();
       course["min-learners"] = 42;
-      course["participant-count"] = 25;
+      course["learner-count"] = 25;
       return course;
     },
-    "subtracts the participant count from the minimum": function(course) {
+    "subtracts the learner count from the minimum": function(course) {
       assert.equal(course.learnersNeeded(), 17);
     }
   }
@@ -22,7 +22,7 @@ vows.describe('courses').addBatch({
       course["decision-date"] = augustFirst2011;
       return course;
     },
-    "subtracts the participant count from the minimum": function(course) {
+    "subtracts now from the decision date": function(course) {
       var now = 1310850939659; // aka July 16, 2011
       assert.equal(course.timeToJoin(now), 1323860341);
     }

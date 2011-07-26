@@ -4,8 +4,8 @@ h2.course-summary= course.summary
 
 p.buy $
   = course.price
-  | 
-  input(type='submit', value='Learn!')
+  form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
+    input(type='submit', value='Learn!')
 
 p.learners-to-go
   = course.learnersNeeded()
