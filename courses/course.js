@@ -2,7 +2,7 @@ module.exports = Course = function(id) {
   this.id = id;
   
   this.learnersNeeded = function() {
-    return this["min-learners"] - this["learner-count"];
+    return this["min-learners"] - this.learnerIds.length;
   }
   
   this.timeToJoin = function(now) {

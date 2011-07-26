@@ -89,7 +89,7 @@ vows.describe('courses').addBatch(setupBatch({
        assert.equal(course.name, testCourseNames[0]);
      },
      'provides the number of learners': function(course) {
-       assert.equal(course["learner-count"], 0);
+       assert.length(course.learnerIds, 0);
      }
    }
   ,
@@ -99,12 +99,15 @@ vows.describe('courses').addBatch(setupBatch({
         this.callback(null, courses)
       }.bind(this));
     },
-    'shows a greater number of learners': {
+    'after the course has been reloaded': {
       topic: function(courses) {
         courses.findByPermalink("thoreau-21st-century", this.callback);
       },
-      'after the course has been reloaded': function(course) {
-        assert.equal(course["learner-count"], 1);
+      'shows a greater number of learners': function(course) {
+        assert.length(course.learnerIds, 1);
+      },
+      'provides a list of the participating learners': function(course) {
+        assert.equal(course.learnerIds[0], 80);
       }
     }
   }

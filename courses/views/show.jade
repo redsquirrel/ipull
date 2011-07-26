@@ -17,3 +17,12 @@ p.time-left
   = course.timeToJoin()
 
 p.course-description= course.description
+
+- if (course.learnerIds.length > 0)
+  h3.learners-participating Learners
+  ul
+    - course.learnerIds.forEach(function(learnerId) {
+      li
+       learner-name= learnerId
+    - })
+  

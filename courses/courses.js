@@ -143,12 +143,15 @@ module.exports = Courses = function(redis, namespace) {
         allAttributes.forEach(function(attribute) {
           keys.push(n("courses:"+courseId+":"+attribute));
         });
+
         var multi = redis.multi();
         multi.mget(keys);
-        multi.scard(n("courses:"+courseId+":learners"));
+        multi.smembers(n("courses:"+courseId+":learners"));
+
         multi.exec(function(error, courseData) {
           var course = hydrate(courseData[0], [courseId])[0];
-          course["learner-count"] = courseData[1];
+          course.learnerIds = courseData[1];
+          
           callback(error, course);
         });
       } else {
