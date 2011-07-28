@@ -31,21 +31,13 @@ module.exports = Courses = function(redis, namespace) {
   this.addLearnerToCourse = function(learnerId, permalink, callback) {
     this.findByPermalink(permalink, function(error, course) {
       if (error) return callback(error);
-      redis.sadd(n("courses:"+course.id+":learners"), learnerId, function(error) {
-        if (error) return callback(error);
-        redis.sadd(n("learners:"+learnerId+":courses"), course.id, function(error) {
-          if (error) return callback(error);
-          resetSortedLearnerIds(course.id, function(error) {
-            if (error) return callback(error);
-            resetSortedCourseIds(
-              "learners:"+learnerId+":courses",
-              "course-ids-by-name:learners:"+learnerId,
-              function(error) {
-                callback(error, course);
-              }
-            );            
-          });
-        });
+      var multi = redis.multi();
+      multi.sadd(n("courses:"+course.id+":learners"), learnerId);
+      multi.sadd(n("learners:"+learnerId+":courses"), course.id);
+      multi.exec(function(error) {
+        resetSortedLearnerIds(course.id);
+        resetSortedCourseIds("learners:"+learnerId+":courses", "course-ids-by-name:learners:"+learnerId);
+        callback(error, course);
       });
     });
   };
@@ -188,10 +180,10 @@ module.exports = Courses = function(redis, namespace) {
   };
 
   function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback? */) {
-    var readSetKey = arguments[2] ? arguments[0] : "courses";
-    var storeListKey = arguments[2] ? arguments[1] : "course-ids-by-name";
-    var callback = arguments[2] || arguments[0];
-    
+    var readSetKey = arguments[1] ? arguments[0] : "courses";
+    var storeListKey = arguments[1] ? arguments[1] : "course-ids-by-name";
+    var callback = arguments[1] ? arguments[2] : arguments[0];
+
     redis.sort(
       n(readSetKey),
       "BY",
