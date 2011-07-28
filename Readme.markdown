@@ -5,13 +5,13 @@ iPull is a social experiment inspired by a book on [The New Culture of Learning]
 
 With the cost of knowledge approaching zero, and the cost of a college degree outpacing wage increases, and the irrevocability of student loans, more high school graduates will be looking for alternatives.
 
-This experiment is meant to explore one of many alternatives.
+This experiment is meant to explore one of many possible alternatives.
 
-iPull is a platform for courses to be proposed by the people interested in learning a subject. A motivated learner sets up a course, choosing the price, class size range, dates, times, duration of a course, and creates an initial description. The learner then commits to paying the price for the course if a minimum number of learners also commit to pay and participate. Once the course begins, the learners are charged the price. At the conclusion of the course, the learners will be able to award the money they paid for the course to any of the other learners in the course. In this way, if there are some oustanding teachers or learning facilitators in a group, they will be rewarded for their skills and effort. They will also gain prestige in the iPull community because all awards are published.
+iPull is a platform for courses to be proposed by the people interested in learning about a specific subject. A motivated learner sets up a course, choosing the price, class size range, dates, times, duration, and creates an initial description. The learner then commits to paying the price for the course if a minimum number of learners also commit to pay and participate. Once the course begins, the learners are charged the price. At the conclusion of the course, the learners will be able to award the money they paid for the course to any of the other learners in the course. In this way, if there are some oustanding teachers or learning facilitators in a group, they will be rewarded for their skills and effort. They will also gain prestige in the iPull community because all awards are published.
 
-For example, let's say a course cost $100 and there were 10 learners who participated. A single learner would have the option to:
+For example, let's say a course cost $100 and there were 10 learners who participated. At the conclusion of the course, the learner would have the option to:
 
-* Do nothing, and iPull would use that money for operational costs.
+* Do nothing, and iPull would use that money for operations.
 * Take all $100 and give it to one of the other learners, implying that this person was exceptionally helpful to the learner.
 * Take a portion of the $100 and give it to one of the other learners, leaving the rest for iPull's operations.
 * Split the $100 into whatever portions make sense and give it to multiple (in this example, up to 9) learners based on their helpfulness.
