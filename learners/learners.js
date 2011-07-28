@@ -83,6 +83,7 @@ module.exports = Learners = function(redis, namespace) {
       default:
         throw "Unknown external site: " + externalSite;
     }
+    dataToStore["name:lower"] = dataToStore.name.toLowerCase();
     for (var attribute in dataToStore) {
       redis.set(n("learners:"+learnerId+":"+attribute), dataToStore[attribute]);
     }

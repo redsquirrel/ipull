@@ -10,7 +10,7 @@ var testRedis = function() {
 
 var testCourseNames = [
   "Thoreau in the 21st Century",
-  "13th Century Mongolian Art"
+  "ancient Mongolian art"
 ];
 
 var testCourseCreators = [53, 80];
@@ -73,7 +73,7 @@ vows.describe('courses').addBatch(setupBatch({
      'provides both courses': function(courseData) {
        assert.length(courseData, 2);
      },
-     'sorts by name': function(courseData) {
+     'sorts by name case-insensitively': function(courseData) {
        assert.equal(courseData[0].name, testCourseNames[1]);  
      },
      'populates the data correctly': function(courseData) {
@@ -243,7 +243,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   updateByPermalink: {
     topic: function(courses) {
-      courses.updateByPermalink("13th-century-mongolian-art", {
+      courses.updateByPermalink("ancient-mongolian-art", {
         summary: "The history of the steppe tribes is a very complex one.",
         "updater-id": 53
       }, function(error, course) {
@@ -268,7 +268,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "updateByPermalink without updater": {
     topic: function(courses) {
-      courses.updateByPermalink("13th-century-mongolian-art", { summary: "What, what?" }, function(error, course) {
+      courses.updateByPermalink("ancient-mongolian-art", { summary: "What, what?" }, function(error, course) {
         this.callback(null, {error: error, course: course});
       }.bind(this));
     },

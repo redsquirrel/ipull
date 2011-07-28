@@ -182,6 +182,9 @@ module.exports = Courses = function(redis, namespace) {
         redis.set(n("courses:"+courseId+":"+attribute), data[attribute]);
       }
     }
+    if (data.name) {
+      redis.set(n("courses:"+courseId+":name:lower"), data.name.toLowerCase());
+    }
   };
 
   function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback? */) {
@@ -192,8 +195,8 @@ module.exports = Courses = function(redis, namespace) {
     redis.sort(
       n(readSetKey),
       "BY",
-      n("courses:*:name"),
-      "ALPHA", // how to make it case-insensitive? just store all-lowercased names... *sigh*
+      n("courses:*:name:lower"),
+      "ALPHA",
       "STORE",
       n(storeListKey),
       callback || function(){/*no-op*/}
@@ -204,8 +207,8 @@ module.exports = Courses = function(redis, namespace) {
     redis.sort(
       n("courses:"+courseId+":learners"),
       "BY",
-      n("learners:*:name"),
-      "ALPHA", // how to make it case-insensitive? just store all-lowercased names... *sigh*
+      n("learners:*:name:lower"),
+      "ALPHA",
       "STORE",
       n("courses:"+courseId+":learner-ids-by-name"),
       callback || function(){/*no-op*/}
