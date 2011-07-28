@@ -25,7 +25,7 @@ module.exports = Courses = function(redis, namespace) {
   var n = require("../redis-util").namespaced(namespace);
   
   this.allByLearnerId = function(learnerId, callback) {
-    this.all("course-ids-by-name:learners:"+learnerId, callback);
+    this.all("learners:"+learnerId+":course-ids-by-name", callback);
   };
   
   this.addLearnerToCourse = function(learnerId, permalink, callback) {
@@ -36,7 +36,7 @@ module.exports = Courses = function(redis, namespace) {
       multi.sadd(n("learners:"+learnerId+":courses"), course.id);
       multi.exec(function(error) {
         resetSortedLearnerIds(course.id);
-        resetSortedCourseIds("learners:"+learnerId+":courses", "course-ids-by-name:learners:"+learnerId);
+        resetSortedCourseIds("learners:"+learnerId+":courses", "learners:"+learnerId+":course-ids-by-name");
         callback(error, course);
       });
     });
@@ -196,7 +196,7 @@ module.exports = Courses = function(redis, namespace) {
       n("learners:*:name:lower"),
       "ALPHA",
       "STORE",
-      n("courses:"+courseId+":learner-ids-by-name"),
+      n("courses:"+courseId+":learner-ids-by-name"), // used in learners.js
       callback || function(){/*no-op*/}
     );
   }
