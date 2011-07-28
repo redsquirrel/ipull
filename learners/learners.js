@@ -59,15 +59,13 @@ module.exports = Learners = function(redis, namespace) {
   };
 
   this.deleteAll = function(callback) {
-    redis.del(n("learners"), function() {
-      redis.del(n("learners:ids"), function() {
-        redis.del(n("learners:facebook_ids:ids"), function() {
-          redis.del(n("learners:twitter_ids:ids"), function() {
-            redis.del(n("learners:google_ids:ids"), callback);
-          });
-        });
-      });
-    });
+    var multi = redis.multi();
+    multi.del(n("learners"));
+    multi.del(n("learners:ids"));
+    multi.del(n("learners:facebook_ids:ids"));
+    multi.del(n("learners:twitter_ids:ids"));
+    multi.del(n("learners:google_ids:ids"));
+    multi.exec(callback);
   };
   
   function setAttributes(externalSite, externalData, learnerId) {
