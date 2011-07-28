@@ -25,7 +25,7 @@ module.exports = Courses = function(redis, namespace) {
   var n = require("../redis-util").namespaced(namespace);
   
   this.allByLearnerId = function(learnerId, callback) {
-    this.all("course-ids-by-name:learner:"+learnerId, callback);
+    this.all("course-ids-by-name:learners:"+learnerId, callback);
   };
   
   this.addLearnerToCourse = function(learnerId, permalink, callback) {
@@ -33,13 +33,18 @@ module.exports = Courses = function(redis, namespace) {
       if (error) return callback(error);
       redis.sadd(n("courses:"+course.id+":learners"), learnerId, function(error) {
         if (error) return callback(error);
-        redis.sadd(n("learner:"+learnerId+":courses"), course.id, function(error) {
+        redis.sadd(n("learners:"+learnerId+":courses"), course.id, function(error) {
           if (error) return callback(error);
-          resetSortedCourseIds(
-            "learner:"+learnerId+":courses",
-            "course-ids-by-name:learner:"+learnerId,
-            callback
-          );
+          resetSortedLearnerIds(course.id, function(error) {
+            if (error) return callback(error);
+            resetSortedCourseIds(
+              "learners:"+learnerId+":courses",
+              "course-ids-by-name:learners:"+learnerId,
+              function(error) {
+                callback(error, course);
+              }
+            );            
+          });
         });
       });
     });
@@ -137,21 +142,15 @@ module.exports = Courses = function(redis, namespace) {
   function find(courseId, callback) {
     redis.sismember(n("courses"), courseId, function(error, courseExists) {
       if (error) return callback(error);
-
+      
       if (courseExists) {
         var keys = [];
         allAttributes.forEach(function(attribute) {
           keys.push(n("courses:"+courseId+":"+attribute));
         });
-
-        var multi = redis.multi();
-        multi.mget(keys);
-        multi.smembers(n("courses:"+courseId+":learners"));
-
-        multi.exec(function(error, courseData) {
-          var course = hydrate(courseData[0], [courseId])[0];
-          course.learnerIds = courseData[1];
-          
+        
+        redis.mget(keys, function(error, courseData) {
+          var course = hydrate(courseData, [courseId])[0];
           callback(error, course);
         });
       } else {
@@ -185,7 +184,7 @@ module.exports = Courses = function(redis, namespace) {
     }
   };
 
-  function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback */) {
+  function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback? */) {
     var readSetKey = arguments[2] ? arguments[0] : "courses";
     var storeListKey = arguments[2] ? arguments[1] : "course-ids-by-name";
     var callback = arguments[2] || arguments[0];
@@ -194,9 +193,21 @@ module.exports = Courses = function(redis, namespace) {
       n(readSetKey),
       "BY",
       n("courses:*:name"),
-      "ALPHA", // how to make it case-insensitive?
+      "ALPHA", // how to make it case-insensitive? just store all-lowercased names... *sigh*
       "STORE",
       n(storeListKey),
+      callback || function(){/*no-op*/}
+    );
+  }
+
+  function resetSortedLearnerIds(courseId, callback) {
+    redis.sort(
+      n("courses:"+courseId+":learners"),
+      "BY",
+      n("learners:*:name"),
+      "ALPHA", // how to make it case-insensitive? just store all-lowercased names... *sigh*
+      "STORE",
+      n("courses:"+courseId+":learner-ids-by-name"),
       callback || function(){/*no-op*/}
     );
   }

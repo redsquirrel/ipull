@@ -8,7 +8,7 @@ p.buy $
     input(type='submit', value='Learn!')
 
 p.learners-to-go
-  = course.learnersNeeded()
+  = course.learnersNeeded(learners)
   | 
   | more learners needed!
 
@@ -18,11 +18,11 @@ p.time-left
 
 p.course-description= course.description
 
-- if (course.learnerIds.length > 0)
+- if (learners.length > 0)
   h3.learners-participating Learners
   ul
-    - course.learnerIds.forEach(function(learnerId) {
+    - learners.forEach(function(learner) {
       li
-       learner-name= learnerId
+       learner-name= learner.name
     - })
   

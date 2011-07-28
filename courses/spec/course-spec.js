@@ -7,11 +7,11 @@ vows.describe('courses').addBatch({
     topic: function() {
       var course = new Course();
       course["min-learners"] = 42;
-      course.learnerIds = [{id: 80, name: "Dave"}];
       return course;
     },
     "subtracts the learner count from the minimum": function(course) {
-      assert.equal(course.learnersNeeded(), 41);
+      var learners = [{id: 80, name: "Dave"}];
+      assert.equal(course.learnersNeeded(learners), 41);
     }
   }
   ,

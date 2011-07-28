@@ -1,8 +1,8 @@
 module.exports = Course = function(id) {
   this.id = id;
   
-  this.learnersNeeded = function() {
-    return this["min-learners"] - this.learnerIds.length;
+  this.learnersNeeded = function(learners) {
+    return this["min-learners"] - learners.length;
   }
   
   this.timeToJoin = function(now) {

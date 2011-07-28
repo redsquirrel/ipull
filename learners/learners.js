@@ -7,7 +7,7 @@ module.exports = Learners = function(redis, namespace) {
 
   this.find = function(id, callback) {
     redis.sismember(n("learners"), id, function(error, learnerExists) {
-      if (error) callback(error);
+      if (error) return callback(error);
       
       if (learnerExists) {
         redis.get(n("learners:"+id+":name"), function(error, name) {
@@ -18,7 +18,7 @@ module.exports = Learners = function(redis, namespace) {
       }
     });
   };
-
+  
   this.findOrCreateLearnerByExternalId = function(externalSite, externalData, callback) {
     redis.hget(n("learners:"+externalSite+"_ids:ids"), externalData.id, function(error, learnerId) {
       if (learnerId) {
@@ -37,6 +37,25 @@ module.exports = Learners = function(redis, namespace) {
         }.bind(this));
       }
     }.bind(this));
+  };
+    
+  this.allByCourseId = function(courseId, callback) {
+    redis.lrange(n("courses:"+courseId+":learner-ids-by-name"), 0, -1, function(error, learnerIds) {
+      if (error) return callback(error);
+      var learners = [];
+      if (learnerIds.length == 0) return callback(null, learners);
+      
+      var keys = [];
+      learnerIds.forEach(function(learnerId) {
+        keys.push(n("learners:"+learnerId+":name"));
+      });
+      redis.mget(keys, function(error, learnerData) {
+        for (var i = 0; i < learnerIds.length; i++) {
+          learners.push({id: learnerIds[i], name: learnerData[i]});
+        }
+        callback(error, learners);
+      });
+    });
   };
 
   this.deleteAll = function(callback) {

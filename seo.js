@@ -4,7 +4,8 @@ module.exports.sluggify = function(name) {
   var slug = stripSlashes(name.toLowerCase());
   slug = slug.replace(/&.+?;/, '');
   slug = slug.replace(/[^a-zA-Z0-9 \']/, '');
-  slug = stripCommonWords(slug);
+  var withoutCommonWords = stripCommonWords(slug);
+  if (withoutCommonWords != "") slug = withoutCommonWords;
   return slug;
 }
 

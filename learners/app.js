@@ -107,6 +107,9 @@ app.use(redisClient.errorResponse);
 
 var learners = new Learners(redisClient);
 
+// For shearing learners with other apps
+app.learners = learners;
+
 app.get('/', function(req, res) {
   if (req.loggedIn) {
     res.redirect("/courses");

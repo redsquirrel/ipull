@@ -88,9 +88,6 @@ vows.describe('courses').addBatch(setupBatch({
      'provides the course by name': function(course) {
        assert.equal(course.name, testCourseNames[0]);
      },
-     'provides the number of learners': function(course) {
-       assert.length(course.learnerIds, 0);
-     }
    }
   ,
   addLearnerToCourse: {
@@ -99,15 +96,32 @@ vows.describe('courses').addBatch(setupBatch({
         this.callback(null, courses)
       }.bind(this));
     },
-    'after the course has been reloaded': {
+    'creates linkages': {
       topic: function(courses) {
-        courses.findByPermalink("thoreau-21st-century", this.callback);
+        courses.findByPermalink("thoreau-21st-century", function(error, course) {
+          this.callback(error, {courses: courses, course: course});
+        }.bind(this));
       },
-      'shows a greater number of learners': function(course) {
-        assert.length(course.learnerIds, 1);
+      'such as': {
+        topic: function(courseData) {
+          courseData.courses.connection().smembers("addLearnerToCourse:courses:"+courseData.course.id+":learners", this.callback);
+        },
+        'the list of course learners': function(learnerIds) {
+          assert.length(learnerIds, 1);
+          assert.equal(learnerIds[0], '80');
+        }
       },
-      'provides a list of the participating learners': function(course) {
-        assert.equal(course.learnerIds[0], 80);
+      'such as': {
+        topic: function(courseData) {
+          courseData.courses.connection().smembers("addLearnerToCourse:learners:80:courses", function(error, courseIds) {
+            courseData.courseIds = courseIds;
+            this.callback(error, courseData);
+          }.bind(this));
+        },
+        'the list of courses for the learner': function(courseData) {
+          assert.length(courseData.courseIds, 1);
+          assert.equal(courseData.courseIds[0], courseData.course.id);
+        }
       }
     }
   }
@@ -215,6 +229,15 @@ vows.describe('courses').addBatch(setupBatch({
     'provides an error': function(testData) {
       assert.ok(testData.err);
       assert.isUndefined(testData.course);
+    }
+  }
+  ,
+  "create with weird name": {
+    topic: function(courses) {
+      courses.create({name: "Sup?", "creator-id": 53}, this.callback);
+    },
+    'permalinks predictably': function(course) {
+      assert.equal(course.permalink, "sup");
     }
   }
   ,

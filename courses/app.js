@@ -11,6 +11,11 @@ app.setupEveryauth = function(a) {
   everyauth.helpExpress(this);
 }
 
+var learners;
+app.setupLearners = function(l) {
+  learners = l;
+}
+
 function allowForMissingEveryauth(req, res, next) {
   if (!everyauth) {
     req.loggedIn = true;
@@ -116,7 +121,10 @@ app.get('/courses', function(_, res) {
 app.get('/courses/:permalink', function(req, res) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
-    res.render('show', {course: course, title: course.name});
+    learners.allByCourseId(course.id, function(err, learners) {
+      if (err) throw err;
+      res.render('show', {course: course, learners: learners, title: course.name});
+    });
   });
 });
 

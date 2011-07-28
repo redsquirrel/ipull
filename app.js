@@ -28,6 +28,7 @@ app.configure('production', function() {
 var learnersApp = require("./learners/app");
 var coursesApp = require("./courses/app");
 coursesApp.setupEveryauth(learnersApp.everyauth);
+coursesApp.setupLearners(learnersApp.learners);
 
 app.use(learnersApp);
 app.use(coursesApp);

@@ -88,4 +88,25 @@ vows.describe('learners').addBatch(setupBatch({
         assert.equal(learner.name, "dave.hoover@gmail.com");
       }
     }
+    ,
+    allByCourseId: {
+      topic: function(learners) {
+        learners.connection().lpush("allByCourseId:courses:1:learner-ids-by-name", 53, function(err) {
+          this.callback(err, learners);
+        }.bind(this));
+      },
+      'with': {
+        topic: function(learners) {
+          learners.allByCourseId(1, function(err, courseLearners) {
+            this.callback(err, {learners: learners, courseLearners: courseLearners});
+          }.bind(this));
+        },
+        'provides the correct number of learners': function(learnerData) {
+          assert.length(learnerData.courseLearners, 1);
+        },
+        teardown: function(learnerData) {
+          learnerData.learners.connection().del("allByCourseId:courses:1:learner-ids-by-name");
+        }
+      }
+    }
 })).export(module);
