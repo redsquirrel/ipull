@@ -98,13 +98,14 @@ app.post('/courses/:permalink', protect, function(req, res) {
   });
 });
 
-app.get('/learning', protect, function(_, res) {
+app.get('/learning', protect, function(req, res) {
   courses.allByLearnerId(req.user.id, function(err, courseData) {
     res.render('index', {courses: courseData, title: "Stuff I'm Learning About"});      
   });
 });
 
 app.post('/learning/:permalink', protect, function(req, res) {
+  // Now grab Braintree stuff and look into making this more real....
   courses.addLearnerToCourse(req.user.id, req.params.permalink, function(err, course) {
     if (err) throw err;
     res.redirect("/courses/" + req.params.permalink);
