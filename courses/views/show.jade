@@ -26,3 +26,7 @@ p.course-description= course.description
        learner-name= learner.name
     - })
   
+- if (!course.inFlight(learners))
+  h3.awards-call-to-action
+    | Are you a member of this course?
+    | Reward your most helpful coursemates!

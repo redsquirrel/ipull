@@ -30,7 +30,7 @@ var fixtureData = function(label, vow) {
   var courseCounter = 0;
   var newCourse = function(courses) {
     var count = courseCounter++;
-    courses.create({name: testCourseNames[count], "creator-id": testCourseCreators[count]}, function() {
+    courses.create({name: testCourseNames[count], "creator-id": testCourseCreators[count], "start-date": 1, "decision-date": 1}, function() {
       this.callback(null, courses);
     }.bind(this));
   }
@@ -144,7 +144,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   create: {
     topic: function(courses) {
-      courses.create({name: "Social Psychology", "creator-id": 53}, function(err, course) {
+      courses.create({name: "Social Psychology", "creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -168,7 +168,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "create with malicious data input": {
     topic: function(courses) {
-      courses.create({name: "Social Psychology", "plain-password": "abcdefg", "creator-id": 53}, function(err, course) {
+      courses.create({name: "Social Psychology", "plain-password": "abcdefg", "creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -189,7 +189,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "create with same name": {
     topic: function(courses) {
-      courses.create({name: testCourseNames[0], "creator-id": 53}, function(err, course) {
+      courses.create({name: testCourseNames[0], "creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
         this.callback(null, {courses: courses, course: course});
       }.bind(this));
     },
@@ -198,7 +198,7 @@ vows.describe('courses').addBatch(setupBatch({
     },
     'twice': {
       topic: function(topic) {
-        topic.courses.create({name: testCourseNames[0], "creator-id": 53}, function(err, course) {
+        topic.courses.create({name: testCourseNames[0], "creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
           this.callback(null, {courses: topic.courses, course: course});
         }.bind(this));
       },
@@ -222,7 +222,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "create without a name": {
     topic: function(courses) {
-      courses.create({"creator-id": 53}, function(err, course) {
+      courses.create({"creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
         this.callback(null, {err: err, course: course})
       }.bind(this));
     },
@@ -234,7 +234,7 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   "create with weird name": {
     topic: function(courses) {
-      courses.create({name: "Sup?", "creator-id": 53}, this.callback);
+      courses.create({name: "Sup?", "creator-id": 53, "decision-date": 1, "start-date": 1}, this.callback);
     },
     'permalinks predictably': function(course) {
       assert.equal(course.permalink, "sup");

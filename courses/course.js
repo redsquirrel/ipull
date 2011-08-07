@@ -3,11 +3,17 @@ module.exports = Course = function(id) {
   
   this.learnersNeeded = function(learners) {
     return this["min-learners"] - learners.length;
-  }
+  };
   
   this.timeToJoin = function(now) {
-    if (!this["decision-date"]) return "n/a";
-    var currentEpochTime = now || new Date().getTime();
-    return this["decision-date"] - currentEpochTime;
+    return this["decision-date"] - currentEpochTime(now);
+  };
+  
+  this.inFlight = function(learners, now) {
+    return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
+  };
+  
+  function currentEpochTime(now) {
+    return now || new Date().getTime();
   }
 }

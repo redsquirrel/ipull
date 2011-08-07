@@ -18,7 +18,7 @@ var safeAttributes = [
   "updater-id"
 ];
 var allAttributes = ["permalink"].concat(safeAttributes);
-var requiredAttributes = ["name", "creator-id"];
+var requiredAttributes = ["name", "creator-id", "decision-date", "start-date"];
 
 module.exports = Courses = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
