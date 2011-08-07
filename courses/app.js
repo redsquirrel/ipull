@@ -61,12 +61,42 @@ app.use(redisClient.errorResponse);
 
 var courses = new Courses(redisClient);
 
+function dataFor(permalink, callback) {
+  courses.findByPermalink(permalink, function(err, course) {
+    if (err) return callback(err);
+    learners.allByCourseId(course.id, function(err, learners) {
+      callback(err, course, learners);
+    });
+  });
+}
+
+function awardable(learners, currentUserId) {
+  var awardableLearners = learners.reduce(function(awardableLearners, learner) {
+    if (learner.id != currentUserId) {
+      awardableLearners.push(learner);
+    }
+    return awardableLearners;
+  }, []);
+  return awardableLearners;
+}
+
 function protect(req, res, next) {
   if (req.loggedIn) {
     next();
   } else {
     res.redirect("/"); // need an alert to login; also store the target for redirect
   }
+}
+
+function membersOnly(req, res, next) {
+  courses.memberOfCourse(req.user.id, req.params.permalink, function(err, isMember) {
+    if (err) throw err;
+    if (isMember) {
+      next();
+    } else {
+      res.redirect('back'); // need a message
+    }
+  });
 }
 
 app.get('/courses/new', protect, function(req, res) {
@@ -98,6 +128,13 @@ app.post('/courses/:permalink', protect, function(req, res) {
   });
 });
 
+app.get('/courses/:permalink/awards/new', protect, membersOnly, function(req, res) {
+  dataFor(req.params.permalink, function(err, course, learners) {
+    if (err) throw err;
+    res.render('awards/new', {course: course, learners: awardable(learners, req.user.id), title: "Give awards for " + course.name});
+  });
+})
+
 app.get('/learning', protect, function(req, res) {
   courses.allByLearnerId(req.user.id, function(err, courseData) {
     res.render('index', {courses: courseData, title: "Stuff I'm Learning About"});      
@@ -120,12 +157,9 @@ app.get('/courses', function(_, res) {
 });
 
 app.get('/courses/:permalink', function(req, res) {
-  courses.findByPermalink(req.params.permalink, function(err, course) {
+  dataFor(req.params.permalink, function(err, course, learners) {
     if (err) throw err;
-    learners.allByCourseId(course.id, function(err, learners) {
-      if (err) throw err;
-      res.render('show', {course: course, learners: learners, title: course.name});
-    });
+    res.render('show', {course: course, learners: learners, title: course.name});
   });
 });
 

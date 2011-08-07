@@ -102,16 +102,15 @@ vows.describe('courses').addBatch(setupBatch({
           this.callback(error, {courses: courses, course: course});
         }.bind(this));
       },
-      'such as': {
+      'from course to learners': {
         topic: function(courseData) {
-          courseData.courses.connection().smembers("addLearnerToCourse:courses:"+courseData.course.id+":learners", this.callback);
+          courseData.courses.memberOfCourse(80, courseData.course.permalink, this.callback);
         },
-        'the list of course learners': function(learnerIds) {
-          assert.length(learnerIds, 1);
-          assert.equal(learnerIds[0], '80');
+        'the list of course learners': function(isMember) {
+          assert.ok(isMember);
         }
       },
-      'such as': {
+      'from learner to courses': {
         topic: function(courseData) {
           courseData.courses.connection().smembers("addLearnerToCourse:learners:80:courses", function(error, courseIds) {
             courseData.courseIds = courseIds;

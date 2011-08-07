@@ -42,6 +42,13 @@ module.exports = Courses = function(redis, namespace) {
     });
   };
   
+  this.memberOfCourse = function(learnerId, permalink, callback) {
+    this.findByPermalink(permalink, function(error, course) {
+      if (error) return callback(error);
+      redis.sismember(n("courses:"+course.id+":learners"), learnerId, callback);
+    });
+  };
+  
   this.all = function(/* sortedListKey?, callback */) {
     var sortedListKey = arguments[1] ? arguments[0] : "course-ids-by-name";
     var callback = arguments[1] || arguments[0];

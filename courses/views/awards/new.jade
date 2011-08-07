@@ -1,0 +1,10 @@
+h1= title
+
+- if (learners.length > 0)
+  ul
+    - learners.forEach(function(learner) {
+      li
+       learner-name= learner.name
+       //- Need to create web-safe unique identifiers for people so we're not exposing ids
+       //- form(action="/courses/#{course.permalink}/awards/#{learner...}")
+    - })
