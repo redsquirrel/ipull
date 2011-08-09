@@ -2,7 +2,7 @@ var assert = require('assert');
 var vows = require('vows');
 var Course = require('../course');
 
-vows.describe('courses').addBatch({
+vows.describe('course').addBatch({
   learnersNeeded: {
     topic: function() {
       var course = new Course();

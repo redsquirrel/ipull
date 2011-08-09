@@ -1,5 +1,6 @@
 var util = require('util');
 var RedisModel = require('../redis-model');
+var Learner = require('./learner');
 
 module.exports = Learners = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
@@ -11,7 +12,7 @@ module.exports = Learners = function(redis, namespace) {
       
       if (learnerExists) {
         redis.get(n("learners:"+id+":name"), function(error, name) {
-          callback(error, {name: name, id: id});
+          callback(error, Learner.from({name: name, id: id}));
         });
       } else {
         callback("Missing learner: " + id);

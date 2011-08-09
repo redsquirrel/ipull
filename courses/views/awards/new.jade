@@ -4,7 +4,8 @@ h1= title
   ul
     - learners.forEach(function(learner) {
       li
-       learner-name= learner.name
-       //- Need to create web-safe unique identifiers for people so we're not exposing ids
-       //- form(action="/courses/#{course.permalink}/awards/#{learner...}")
+        learner-name= learner.name
+        form(action="/courses/#{course.permalink}/awards")
+          input(type="hidden", name="recipient", value=learner.username)
+          input(type="submit", value="Award!")
     - })

@@ -40,9 +40,10 @@ function everyauthErrback(err, data) {
 
 everyauth
   .everymodule
-  .findUserById(findUserById)
-  .moduleTimeout(10000)
-  .moduleErrback(everyauthErrback);
+    .findUserById(findUserById)
+    .moduleTimeout(10000)
+    .moduleErrback(everyauthErrback);
+    // .redirectPath('/learners/tbd'); WTF?
 
 everyauth
   .facebook
@@ -50,14 +51,14 @@ everyauth
     .appSecret(process.env.FacebookAppSecret)
     .handleAuthCallbackError(authDenied)
     .findOrCreateUser(authExternalLearner("facebook"))
-    .redirectPath('/courses');
+    .redirectPath('/learners/tbd');
 
 everyauth
   .twitter
     .consumerKey(process.env.TwitterConsumerKey)
     .consumerSecret(process.env.TwitterConsumerSecret)
     .findOrCreateUser(authExternalLearner("twitter"))
-    .redirectPath('/courses');
+    .redirectPath('/learners/tbd');
 
 everyauth
   .google
@@ -66,7 +67,7 @@ everyauth
     .scope('https://www.google.com/m8/feeds')
     .handleAuthCallbackError(authDenied)
     .findOrCreateUser(authExternalLearner("google"))
-    .redirectPath('/courses');
+    .redirectPath('/learners/tbd');
 
 var app = module.exports = express.createServer(
     express.cookieParser()
@@ -116,6 +117,18 @@ app.get('/', function(req, res) {
   } else {
     res.render('index', {title: ""});
   }
+});
+
+app.get('/learners/tbd', /* protect, */ function(req, res) {
+  if (req.user.hasProfile()) {
+    res.redirect("/courses");
+  } else {
+    res.redirect("/profile/new");
+  }
+});
+
+app.get('/profile/new', function(req, res){
+  res.render("new-profile", {title: "Please tell us about yourself"});
 });
 
 everyauth.helpExpress(app);
