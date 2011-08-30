@@ -2,6 +2,7 @@ var express = require('express');
 var Courses = require('./courses');
 var redis = require('redis');
 var redisUtil = require('../redis-util');
+var auth = require('../auth');
 
 var app = module.exports = express.createServer();
 
@@ -80,14 +81,6 @@ function awardable(learners, currentUserId) {
   return awardableLearners;
 }
 
-function protect(req, res, next) {
-  if (req.loggedIn) {
-    next();
-  } else {
-    res.redirect("/"); // need an alert to login; also store the target for redirect
-  }
-}
-
 function membersOnly(req, res, next) {
   courses.memberOfCourse(req.user.id, req.params.permalink, function(err, isMember) {
     if (err) throw err;
@@ -99,11 +92,11 @@ function membersOnly(req, res, next) {
   });
 }
 
-app.get('/courses/new', protect, function(req, res) {
+app.get('/courses/new', auth.protect, function(req, res) {
   res.render("new", {title: "Create Your Course", course: {}});
 });
 
-app.post('/courses', protect, function(req, res) {
+app.post('/courses', auth.protect, function(req, res) {
   var courseData = req.body;
   courseData["creator-id"] = req.user.id;
   courses.create(courseData, function(err, course) {
@@ -112,14 +105,14 @@ app.post('/courses', protect, function(req, res) {
   });
 });
 
-app.get('/courses/:permalink/edit', protect, function(req, res) {
+app.get('/courses/:permalink/edit', auth.protect, function(req, res) {
   courses.findByPermalink(req.params.permalink, function(err, course) {
     if (err) throw err;
     res.render("edit", {title: "Update " + course.name, course: course})
   });
 });
 
-app.post('/courses/:permalink', protect, function(req, res) {
+app.post('/courses/:permalink', auth.protect, function(req, res) {
   var courseData = req.body;
   courseData["updater-id"] = req.user.id;
   courses.updateByPermalink(req.params.permalink, courseData, function(err, course) {
@@ -128,20 +121,24 @@ app.post('/courses/:permalink', protect, function(req, res) {
   });
 });
 
-app.get('/courses/:permalink/awards/new', protect, membersOnly, function(req, res) {
+app.get('/courses/:permalink/awards/new', auth.protect, membersOnly, function(req, res) {
   dataFor(req.params.permalink, function(err, course, learners) {
     if (err) throw err;
     res.render('awards/new', {course: course, learners: awardable(learners, req.user.id), title: "Give awards for " + course.name});
   });
-})
+});
 
-app.get('/learning', protect, function(req, res) {
+app.post('/courses/:permalink/awards', auth.protect, membersOnly, function(req, res) {
+  res.send('Right here. Now we give someone an award.');
+});
+
+app.get('/learning', auth.protect, function(req, res) {
   courses.allByLearnerId(req.user.id, function(err, courseData) {
     res.render('index', {courses: courseData, title: "Stuff I'm Learning About"});      
   });
 });
 
-app.post('/learning/:permalink', protect, function(req, res) {
+app.post('/learning/:permalink', auth.protect, function(req, res) {
   // Now grab Braintree stuff and look into making this more real....
   courses.addLearnerToCourse(req.user.id, req.params.permalink, function(err, course) {
     if (err) throw err;

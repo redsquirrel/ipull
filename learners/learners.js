@@ -2,22 +2,33 @@ var util = require('util');
 var RedisModel = require('../redis-model');
 var Learner = require('./learner');
 
+var allAttributes = ["name", "username"];
+
 module.exports = Learners = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
   var n = require("../redis-util").namespaced(namespace);
 
-  this.find = function(id, callback) {
-    redis.sismember(n("learners"), id, function(error, learnerExists) {
+  this.find = function(learnerId, callback) {
+    redis.sismember(n("learners"), learnerId, function(error, learnerExists) {
       if (error) return callback(error);
       
       if (learnerExists) {
-        redis.get(n("learners:"+id+":name"), function(error, name) {
-          callback(error, Learner.from({name: name, id: id}));
+        var keys = [];
+        allAttributes.forEach(function(attribute) {
+          keys.push(n("learners:"+learnerId+":"+attribute));
+        });
+        redis.mget(keys, function(error, learnerData) {
+          var learner = hydrate(learnerData, [learnerId])[0];
+          callback(error, learner);
         });
       } else {
         callback("Missing learner: " + id);
       }
     });
+  };
+
+  this.setUsername = function(id, username, callback) {
+    redis.set(n("learners:"+id+":username"), username, callback);
   };
   
   this.findOrCreateLearnerByExternalId = function(externalSite, externalData, callback) {
@@ -48,12 +59,12 @@ module.exports = Learners = function(redis, namespace) {
       
       var keys = [];
       learnerIds.forEach(function(learnerId) {
-        keys.push(n("learners:"+learnerId+":name"));
+        allAttributes.forEach(function(attribute) {
+          keys.push(n("learners:"+learnerId+":"+attribute));
+        });
       });
       redis.mget(keys, function(error, learnerData) {
-        for (var i = 0; i < learnerIds.length; i++) {
-          learners.push({id: learnerIds[i], name: learnerData[i]});
-        }
+        var learners = hydrate(learnerData, learnerIds);
         callback(error, learners);
       });
     });
@@ -70,7 +81,7 @@ module.exports = Learners = function(redis, namespace) {
   };
   
   function setAttributes(externalSite, externalData, learnerId) {
-    var dataToStore = {};
+    var dataToStore = {username: externalData.username};
     switch(externalSite) {
       case "google":
         dataToStore.name = externalData.id;
@@ -88,5 +99,19 @@ module.exports = Learners = function(redis, namespace) {
     }
   }
 };
+
+// TODO duplication with courses.js ... DRY it up!
+function hydrate(learnerData, learnerIds) {
+  var learners = [];
+  var learnerIdCounter = 0;
+  for (var c = 0; c < learnerData.length; c += allAttributes.length) {
+    var learner = new Learner.from({id: learnerIds[learnerIdCounter++]});
+    for (var a = 0; a < allAttributes.length; a++) {
+      learner[allAttributes[a]] = learnerData[c+a];
+    }
+    learners.push(learner);
+  }
+  return learners;
+}
 
 util.inherits(Learners, RedisModel);

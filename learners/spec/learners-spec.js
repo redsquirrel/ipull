@@ -10,6 +10,7 @@ var testRedis = function() {
 
 var testTwitterId = 12345;
 var testTwitterName = "Charlie";
+var testUsername = "charchar";
 
 var fixtureData = function(label, vow) {
   var namespaceLearners = function() {
@@ -24,7 +25,7 @@ var fixtureData = function(label, vow) {
   };
 
   var newLearner = function(learners) {
-    learners.findOrCreateLearnerByExternalId("twitter", {id: testTwitterId, name: testTwitterName}, function() {
+    learners.findOrCreateLearnerByExternalId("twitter", {id: testTwitterId, name: testTwitterName, username: testUsername}, function() {
       this.callback(null, learners);
     }.bind(this));
   }
@@ -91,7 +92,7 @@ vows.describe('learners').addBatch(setupBatch({
     ,
     allByCourseId: {
       topic: function(learners) {
-        learners.connection().lpush("allByCourseId:courses:1:learner-ids-by-name", 53, function(err) {
+        learners.connection().lpush("allByCourseId:courses:1:learner-ids-by-name", 1, function(err) {
           this.callback(err, learners);
         }.bind(this));
       },
@@ -103,6 +104,10 @@ vows.describe('learners').addBatch(setupBatch({
         },
         'provides the correct number of learners': function(learnerData) {
           assert.length(learnerData.courseLearners, 1);
+        },
+        'populates learner data': function(learnerData) {
+          assert.equal(learnerData.courseLearners[0].name, testTwitterName);
+          assert.equal(learnerData.courseLearners[0].username, testUsername);
         },
         teardown: function(learnerData) {
           learnerData.learners.connection().del("allByCourseId:courses:1:learner-ids-by-name");

@@ -1,5 +1,6 @@
 h2 Please tell us a bit more about yourself
 
-label(for="profile-login-name") Login Name
-input(type="text", name="login-name", id="profile-login-name")
-input(type="submit")
+form(action="/profile", id="profile-form", method="POST")
+  label(for="profile-username") Username
+  input(type="text", name="username", id="profile-username")
+  input(type="submit")

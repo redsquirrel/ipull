@@ -2,6 +2,7 @@ h1.course-name= course.name
 
 h2.course-summary= course.summary
 
+//- TODO this needs to only be shown prior to decision date
 p.buy $
   = course.price
   form(action="/learning/#{course.permalink}", id="participation-form", method="POST")

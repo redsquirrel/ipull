@@ -5,7 +5,7 @@ h1= title
     - learners.forEach(function(learner) {
       li
         learner-name= learner.name
-        form(action="/courses/#{course.permalink}/awards")
+        form(action="/courses/#{course.permalink}/awards", method="POST")
           input(type="hidden", name="recipient", value=learner.username)
           input(type="submit", value="Award!")
     - })

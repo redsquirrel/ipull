@@ -3,6 +3,7 @@ var everyauth = require('everyauth');
 var redis = require('redis');
 var redisUtil = require('../redis-util');
 var Learners = require('./learners');
+var auth = require('../auth');
 
 function authDenied(_, res) {
   res.redirect('/');
@@ -119,7 +120,8 @@ app.get('/', function(req, res) {
   }
 });
 
-app.get('/learners/tbd', /* protect, */ function(req, res) {
+// TODO: this shouldn't be necessary, should do this up in everyauth
+app.get('/learners/tbd', auth.protect, function(req, res) {
   if (req.user.hasProfile()) {
     res.redirect("/courses");
   } else {
@@ -127,8 +129,14 @@ app.get('/learners/tbd', /* protect, */ function(req, res) {
   }
 });
 
-app.get('/profile/new', function(req, res){
+app.get('/profile/new', auth.protect, function(req, res){
   res.render("new-profile", {title: "Please tell us about yourself"});
+});
+
+app.post('/profile', auth.protect, function(req, res) {
+  learners.setUsername(req.user.id, req.body.username, function() {
+    res.redirect("/courses");
+  });
 });
 
 everyauth.helpExpress(app);
