@@ -15,6 +15,30 @@ vows.describe('course').addBatch({
     }
   }
   ,
+  learnersSeatsAvailable: {
+    topic: function() {
+      var course = new Course();
+      course["max-learners"] = 42;
+      return course;
+    },
+    "subtracts the learner count from the minimum": function(course) {
+      var learners = [{id: 80, name: "Dave"}];
+      assert.equal(course.learnersSeatsAvailable(learners), 41);
+    }
+  }
+  ,
+  learnersMaxed: {
+    topic: function() {
+      var course = new Course();
+      course["max-learners"] = 1;
+      return course;
+    },
+    "Maximun amount of learners for automatic enrollment exceeded": function(course) {
+      var learners = [{id: 80, name: "Dave"}, {id: 90, name: "Jos"}];
+      assert.equal(course.learnersMaxed(learners), true);
+    }
+  }
+  ,
   timeToJoin: {
     topic: function() {
       var course = new Course();
