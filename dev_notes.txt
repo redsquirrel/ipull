@@ -1,0 +1,36 @@
+This document cointains a series of notes not directly written to be consumed by someone else by me, but if they can be of help, I'd be happy with that.
+
+Development Environment
+
+ - You will need Node (and npm), Redis and optionally Foreman to use the env.example.sh script in the code (at least you will need to set up variables so better off using the script)
+
+Make sure you have redis installed: http://redis.io/download
+Run it locally. Type: redis-server
+
+I got redis installed through mac ports.
+  - to start up a redis server instance use:
+    redis-server /opt/local/etc/redis.conf
+
+And it seems to work when testing with:
+  - Open redis-cli
+  - set joon "jshead"
+  - get joon
+Have also tested it in ubuntu through apt-get and seems to work fine.
+
+Make sure you have node installed: http://nodejs.org/#download
+Run it locally. Type: node (exit with crtl+c).
+
+install npm 
+curl http://npmjs.org/install.sh | sh
+
+Installation of the dependencies for the app is automated through the package.json file. Type: npm install
+
+- Foreman installation: gem install foreman
+
+For authentication a series of keys are needed (env.sh). Twitter allows to register http://127.0.0.1:3000 so I went with that one. (althougg it is a pain to have to use auth during development so should find a way to disable it!)
+Copy the keys for your app in the env file after registering it at http://dev.twitter.com
+
+A simple: './env.example.sh' command should start up the system and make it available in http://localhost:3000/
+
+The specs can be run with vows as follows: node courses/spec/course-spec.js
+(there might be other ways but I haven't read the vows docs... yet!)
