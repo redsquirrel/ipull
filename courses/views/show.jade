@@ -2,7 +2,6 @@ h1.course-name= course.name
 
 h2.course-summary= course.summary
 
-//- TODO this needs to only be shown prior to decision date
 
 - if (course.learnersNeeded(learners) > 0 && course.timeToJoin() > 0 )
   p.buy $
@@ -18,6 +17,10 @@ h2.course-summary= course.summary
   p.time-left
     | Time left to join in Days (aprox.)
     = parseInt(course.timeToJoin() / 86400000);
+
+- else
+  //- TODO this message should be internationalised
+  p.course-closed This course is closed for enrollment
 
 p.course-description= course.description
 
