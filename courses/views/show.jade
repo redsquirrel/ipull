@@ -2,8 +2,12 @@ h1.course-name= course.name
 
 h2.course-summary= course.summary
 
+- if (course.learnersMaxed(learners) || (course.timeToJoin() < 0 ))
+  //- TODO this message should be internationalised
+  p.course-closed This course is closed for enrollment
 
-- if (course.learnersNeeded(learners) > 0 && course.timeToJoin() > 0 )
+- else
+  //- TODO If user is a learner do not show the buy button
   p.buy $
     = course.price
     form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
@@ -14,13 +18,14 @@ h2.course-summary= course.summary
       | 
       | more learners needed!
 
+  p.learners-seats-available
+      = course.learnersSeatsAvailable(learners)
+      | 
+      | more learners can still join in!
+      
   p.time-left
     | Time left to join in Days (aprox.)
     = parseInt(course.timeToJoin() / 86400000);
-
-- else
-  //- TODO this message should be internationalised
-  p.course-closed This course is closed for enrollment
 
 p.course-description= course.description
 
