@@ -3,19 +3,21 @@ h1.course-name= course.name
 h2.course-summary= course.summary
 
 //- TODO this needs to only be shown prior to decision date
-p.buy $
-  = course.price
-  form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
-    input(type='submit', value='Learn!')
 
-p.learners-to-go
-  = course.learnersNeeded(learners)
-  | 
-  | more learners needed!
+- if (course.learnersNeeded(learners) > 0 && course.timeToJoin() > 0 )
+  p.buy $
+    = course.price
+    form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
+      input(type='submit', value='Learn!')
 
-p.time-left
-  | Time left to join
-  = course.timeToJoin()
+  p.learners-to-go
+      = course.learnersNeeded(learners)
+      | 
+      | more learners needed!
+
+  p.time-left
+    | Time left to join in Days (aprox.)
+    = parseInt(course.timeToJoin() / 86400000);
 
 p.course-description= course.description
 

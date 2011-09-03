@@ -6,7 +6,7 @@ module.exports = Course = function(id) {
   };
   
   this.timeToJoin = function(now) {
-    return this["decision-date"] - currentEpochTime(now);
+    return (new Date(this["decision-date"] )) - currentEpochTime(now);
   };
   
   this.inFlight = function(learners, now) {
