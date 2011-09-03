@@ -21,7 +21,7 @@ vows.describe('course').addBatch({
       course["max-learners"] = 42;
       return course;
     },
-    "subtracts the learner count from the minimum": function(course) {
+    "subtracts the learner count from the computed available seats": function(course) {
       var learners = [{id: 80, name: "Dave"}];
       assert.equal(course.learnersSeatsAvailable(learners), 41);
     }
