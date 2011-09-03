@@ -1,4 +1,4 @@
-This document cointains a series of notes not directly written to be consumed by someone else by me, but if they can be of help, I'd be happy with that.
+This document contains a series of notes not directly written to be consumed by someone else by me, but if they can be of help, I'd be happy with that.
 
 Development Environment
 
@@ -16,18 +16,20 @@ And it seems to work when testing with:
   - set joon "jshead"
   - get joon
 Have also tested it in ubuntu through apt-get and seems to work fine.
+Redis is certainly different if you are used to relational dbs; for some insight on how data is structured in this app
+a look at Ryan Briones' talk can help: http://vimeo.com/26385026
 
 Make sure you have node installed: http://nodejs.org/#download
 Run it locally. Type: node (exit with crtl+c).
 
-install npm 
+Install npm 
 curl http://npmjs.org/install.sh | sh
 
 Installation of the dependencies for the app is automated through the package.json file. Type: npm install
 
 - Foreman installation: gem install foreman
 
-For authentication a series of keys are needed (env.sh). Twitter allows to register http://127.0.0.1:3000 so I went with that one. (althougg it is a pain to have to use auth during development so should find a way to disable it!)
+For authentication a series of keys are needed (env.sh). Twitter allows to register http://127.0.0.1:3000 so I went with that one. (although it is a pain to have to use auth during development so should find a way to disable it!)
 Copy the keys for your app in the env file after registering it at http://dev.twitter.com
 
 A simple: './env.example.sh' command should start up the system and make it available in http://localhost:3000/
