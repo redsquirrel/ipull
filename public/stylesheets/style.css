@@ -211,8 +211,19 @@ td { vertical-align: top; }
    Author: 
    ========================================================================== */
 
+#container {
+  width: 960px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+}
 
+#main-nav, #user-nav {
+  border: 2px solid #ddd;
+}
 
+footer {
+  border: 2px solid #ddd;
+}
 
 
 
