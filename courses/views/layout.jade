@@ -1,16 +1,1 @@
-!!! 5
-html(lang="en")
-  head
-    title iPull #{title} : working to decentralize and enrich the learning process
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    p
-      - if (everyauth.loggedIn)
-        | Hi #{user.name},
-        a(href='/logout') Logout
-        |, 
-      a(href='https://github.com/redsquirrel/ipull/blob/master/Readme.markdown')
-        | Learn more about this project
-    != body
-    
-    
+!= partial("../../views/master-layout")

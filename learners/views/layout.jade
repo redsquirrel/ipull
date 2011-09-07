@@ -1,10 +1,1 @@
-!!! 5
-html(lang="en")
-  head
-    title iPull #{title} : working to decentralize and enrich the learning process
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='http://static.ak.fbcdn.net/connect/en_US/core.js')
-  body
-    - if (everyauth.loggedIn)
-      p Hi #{user.name}
-    != body
+!= partial("../../views/master-layout")
