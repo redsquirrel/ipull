@@ -17,6 +17,16 @@ module.exports = Course = function(id) {
     return (new Date(this["decision-date"] )) - currentEpochTime(now);
   };
   
+  this.purchasableBy = function(learner, learners, now) {
+    if (this.timeToJoin(now) < 0) return false;
+    return !this.purchasedBy(learner, learners);
+  }
+  
+  this.purchasedBy = function(learner, learners) {
+    if (!learner) return false;
+    return ~learners.map(function(learner) {return learner.username}).indexOf(learner.username);
+  }
+  
   this.inFlight = function(learners, now) {
     return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
   };

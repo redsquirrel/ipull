@@ -2,16 +2,15 @@ h1.course-name= course.name
 
 h2.course-summary= course.summary
 
-- if (course.learnersMaxed(learners) || (course.timeToJoin() < 0 ))
-  //- TODO this message should be internationalised
-  p.course-closed This course is closed for enrollment
-
-- else
-  //- TODO If user is a learner do not show the buy button
-  p.buy $
+- if (course.purchasableBy(user, learners))
+  p.purchase $
     = course.price
     form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
       input(type='submit', value='Learn!')
+- else if (course.purchasedBy(user, learners))
+  p.already-purchased You've already bought this!
+- else
+  p.no-purchase No longer available
 
   p.learners-to-go
       = course.learnersNeeded(learners)
@@ -37,7 +36,7 @@ p.course-description= course.description
        learner-name= learner.name
     - })
   
-- if (!course.inFlight(learners))
+- if (course.inFlight(learners))
   h3.awards-call-to-action
     | Are you a member of this course?
     a(href="/courses/#{course.permalink}/awards/new").award Reward your most helpful coursemates!

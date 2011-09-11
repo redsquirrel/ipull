@@ -65,5 +65,50 @@ vows.describe('course').addBatch({
       var learners = [{id: 80, name: "Dave"}];
       assert.ok(course.inFlight(learners, now));
     }
+  } ,
+  purchasableBy: {
+    topic: function() {
+      var course = new Course();
+      var augustFirst2011 = 1312174800000;      
+      course["decision-date"] = augustFirst2011;
+      return course;
+    },
+    "is true if before decision date": function(course) {
+      var now = 1310850939659; // aka July 16, 2011
+      assert.ok(course.purchasableBy(null, [], now));
+    },
+    "is false if after decision date": function(course) {
+      var now = 1315313726000; // aka September 6, 2011
+      assert.equal(course.purchasableBy(null, [], now), false);
+    },
+    "is false if learner has already joined": function(course) {
+      var now = 1310850939659; // aka July 16, 2011
+      var learner = {username: "dave"};
+      var learners = [{username: "staci"}, {username: "dave"}];
+      assert.equal(course.purchasableBy(learner, learners, now), false);
+    },
+    "is true if learner hasn't joined yet": function(course) {
+      var now = 1310850939659; // aka July 16, 2011
+      var learner = {username: "dave"};
+      var learners = [{username: "staci"}, {username: "charlie"}];
+      assert.ok(course.purchasableBy(learner, learners, now));
+    }
+  }
+  ,
+  purchasedBy: {
+    topic: new Course(),
+    "is true if learner is in the learners list": function(course) {
+      var learner = {username: "dave"};
+      var learners = [{username: "staci"}, {username: "dave"}];
+      assert.ok(course.purchasedBy(learner, learners));
+    },
+    "is false if learner is null": function(course) {
+      assert.equal(course.purchasedBy(null, []), false);
+    },
+    "is false if learner is not in the learners list": function(course) {
+      var learner = {username: "dave"};
+      var learners = [{username: "staci"}, {username: "charlie"}];
+      assert.equal(course.purchasedBy(learner, learners), false);
+    }
   }
 }).export(module);
