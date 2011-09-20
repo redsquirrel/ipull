@@ -84,6 +84,7 @@ module.exports = Learners = function(redis, namespace) {
     var dataToStore = {username: externalData.username};
     switch(externalSite) {
       case "google":
+      case "dev":
         dataToStore.name = externalData.id;
         break;
       case "twitter":
