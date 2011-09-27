@@ -4,15 +4,16 @@ var Learner = require('../learner');
 
 vows.describe('learner').addBatch({
   'without a username': {
-    topic: Learner.from({id:5, name: "Staci"}),
+    topic: new Learner(5),
     "has no profile": function(learner){
       assert.equal(learner.hasProfile(), false);
     }
   }
   ,
   'with a username': {
-    topic: Learner.from({id:5, name: "Staci", username: "staci"}),
+    topic: new Learner(5),
     "has a profile": function(learner){
+      learner.username = "staci";
       assert.ok(learner.hasProfile());
     }
   }

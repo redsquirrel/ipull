@@ -18,13 +18,13 @@ module.exports = Learners = function(redis, namespace) {
           keys.push(n("learners:"+learnerId+":"+attribute));
         });
         redis.mget(keys, function(error, learnerData) {
-          var learner = hydrate(learnerData, [learnerId])[0];
+          var learner = this.hydrate(learnerData, [learnerId], allAttributes, Learner)[0];
           callback(error, learner);
-        });
+        }.bind(this));
       } else {
         callback("Missing learner: " + id);
       }
-    });
+    }.bind(this));
   };
 
   this.setUsername = function(id, username, callback) {
@@ -64,10 +64,10 @@ module.exports = Learners = function(redis, namespace) {
         });
       });
       redis.mget(keys, function(error, learnerData) {
-        var learners = hydrate(learnerData, learnerIds);
+        var learners = this.hydrate(learnerData, learnerIds, allAttributes, Learner);
         callback(error, learners);
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   };
 
   this.deleteAll = function(callback) {
@@ -100,19 +100,5 @@ module.exports = Learners = function(redis, namespace) {
     }
   }
 };
-
-// TODO duplication with courses.js ... DRY it up!
-function hydrate(learnerData, learnerIds) {
-  var learners = [];
-  var learnerIdCounter = 0;
-  for (var c = 0; c < learnerData.length; c += allAttributes.length) {
-    var learner = new Learner.from({id: learnerIds[learnerIdCounter++]});
-    for (var a = 0; a < allAttributes.length; a++) {
-      learner[allAttributes[a]] = learnerData[c+a];
-    }
-    learners.push(learner);
-  }
-  return learners;
-}
 
 util.inherits(Learners, RedisModel);
