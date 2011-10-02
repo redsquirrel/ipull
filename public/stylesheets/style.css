@@ -217,7 +217,18 @@ td { vertical-align: top; }
   border: 1px solid #ddd;
 }
 
-#main-nav, #user-nav {
+#main-nav , ul, li {
+
+  border: 2px solid #ddd;
+  display: inline;
+}
+#user-nav {
+  border: 2px solid #ddd;
+  display: inline;
+  float: right;
+}
+
+#external_logins {
   border: 2px solid #ddd;
 }
 
