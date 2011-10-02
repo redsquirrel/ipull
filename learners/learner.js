@@ -1,9 +1,8 @@
-module.exports = Learner = {
-  from: function(learnerData) {
-    learnerData.hasProfile = function() {
-      return this.username !== undefined;
-    };
-    return learnerData;
-  }
+module.exports = Learner = function(id) {
+  this.id = id;
+  
+  this.hasProfile = function() {
+    return this.username !== undefined;
+  };
 };
 

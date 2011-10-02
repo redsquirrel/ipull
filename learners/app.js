@@ -13,15 +13,25 @@ function authExternalLearner(externalSite) {
   return function(session, accessToken, accessTokExtra, externalData) {
     // use session and accessToken and accessSecret to persist the auth?
     var promise = this.Promise();
-    learners.findOrCreateLearnerByExternalId(externalSite, externalData, function(error, learner) {
-      if (error) {
-        promise.fail(error);
-      } else {
-        promise.fulfill(learner);
-      }
-    });
+    learners.findOrCreateLearnerByExternalId(externalSite, externalData, authCallback(promise));
     return promise;
   }
+}
+
+function authDevLearner(username) {
+  var promise = this.Promise();
+  learners.findOrCreateLearnerByExternalId("dev", {id: username}, authCallback(promise));
+  return promise;
+}
+
+function authCallback(promise) {
+  return function(error, learner) {
+    if (error) {
+      promise.fail(error);
+    } else {
+      promise.fulfill(learner);
+    }
+  };
 }
 
 function findUserById(userId, callback) {
@@ -45,6 +55,18 @@ everyauth
     .moduleTimeout(10000)
     .moduleErrback(everyauthErrback);
     // .redirectPath('/learners/tbd'); WTF?
+
+if (process.env.NODE_ENV != "production") {
+  everyauth.password
+    .getLoginPath('...')
+    .loginFormFieldName('username')
+    .postLoginPath('/dev-login')
+    .authenticate(authDevLearner)
+    .loginSuccessRedirect('/learners/tbd')
+    .getRegisterPath('...')
+    .postRegisterPath('...')
+    .registerUser(function() {})
+}
 
 everyauth
   .facebook
