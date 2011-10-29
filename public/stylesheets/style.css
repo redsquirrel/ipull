@@ -222,10 +222,30 @@ td { vertical-align: top; }
   border: 2px solid #ddd;
   display: inline;
 }
+
 #user-nav {
   border: 2px solid #ddd;
   display: inline;
   float: right;
+}
+
+#content {
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.course-new {
+  display: block;
+  margin-right: 50px;
+  padding: 20px;
+  text-align: right;
+}
+
+.courses-list {
+  border: 1px dashed #333;
+  margin: 0px auto;
+  width: 90%;
+  background-color:#eee;
 }
 
 #external_logins {

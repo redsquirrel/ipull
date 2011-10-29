@@ -37,15 +37,16 @@ html(class='no-js', lang='en')
             li
             | Hi #{user.name}, 
             li
-              a(href='/logout') Logout,
+              a(href='/profile/new') profile |
             li
-              a(href='/profile/new') profile
+              a(href='/logout') Logout
           - else
             p You are not logged in
-            #nott.clear
+            a(href='/').login-link Log In
+            div.clear
       section#content.grid_16!= body
 
-      #nottin.clear
+      div.clear
       footer.grid_16
         a(href='https://github.com/redsquirrel/ipull/blob/master/Readme.markdown')
           | Learn more about this project
