@@ -234,6 +234,92 @@ td { vertical-align: top; }
   margin-bottom: 15px;
 }
 
+label {
+  color: #404040;
+  float: left;
+  font-size: 13px;
+  line-height: 18px;
+  padding-top: 6px;
+  text-align: right;
+  width: 130px;
+}
+
+input, textarea, select {
+  margin-left: 100px;
+  margin-top: 6px;
+  border: 1px solid #CCCCCC;
+  border-radius: 3px 3px 3px 3px;
+  color: #808080;
+  display: inline-block;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 4px;
+  width: 210px;
+}
+
+.actions {
+  background: none repeat scroll 0 0 #F5F5F5;
+  border-radius: 0 0 3px 3px;
+  border-top: 1px solid #DDDDDD;
+  margin-bottom: 18px;
+  margin-top: 18px;
+  padding: 17px 20px 18px 150px;
+}
+
+input[type="button"], input[type="reset"], input[type="submit"] {
+  height: auto;
+  width: auto;
+}
+
+.login-logos {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+  border-radius: 5px 5px 5px 5px;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 2px 2px 4px #DDDDDD;
+  float: left;
+  height: 60px;
+  margin: 3px;
+  width: 100px;
+}
+.btn.primary {
+  background-color: #0064CD;
+  background-image: -moz-linear-gradient(center top , #049CDB, #0064CD);
+  background-repeat: repeat-x;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  color: #FFFFFF;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  -moz-transition: all 0.1s linear 0s;
+  background-color: #E6E6E6;
+  background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #E6E6E6);
+  background-repeat: no-repeat;
+  border-color: #CCCCCC #CCCCCC #BBBBBB;
+  border-radius: 4px 4px 4px 4px;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #333333;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  line-height: normal;
+  padding: 5px 14px 6px;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
 .course-new {
   display: block;
   margin-right: 50px;
@@ -249,7 +335,10 @@ td { vertical-align: top; }
 }
 
 #external_logins {
-  border: 2px solid #ddd;
+}
+
+.dev-mode {
+  width: 70%
 }
 
 footer {
