@@ -1,42 +1,47 @@
 h1.course-name= course.name
+div.course-image
 
-h2.course-summary= course.summary
+  div.course-details
+  h3.summary-label Course Summary
+  span.course-summary= course.summary
 
-- if (course.purchasableBy(user, learners))
-  p.purchase $
-    = course.price
-    form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
-      input(type='submit', value='Learn!')
-- else if (course.purchasedBy(user, learners))
-  p.already-purchased You've already bought this!
-- else
-  p.no-purchase No longer available
+  - if (course.purchasableBy(user, learners))
+    p.purchase This course is open for applications:
+      p.course-price Price is $
+        = course.price
+      p.learners-to-go
+          = course.learnersNeeded(learners)
+          | 
+          | more learners needed!
 
-  p.learners-to-go
-      = course.learnersNeeded(learners)
-      | 
-      | more learners needed!
+      p.learners-seats-available
+          = course.learnersSeatsAvailable(learners)
+          | 
+          | more learners can still join in!
+          
+      p.time-left
+        | Time left to join in Days (aprox.)
+        = parseInt(course.timeToJoin() / 86400000);
 
-  p.learners-seats-available
-      = course.learnersSeatsAvailable(learners)
-      | 
-      | more learners can still join in!
-      
-  p.time-left
-    | Time left to join in Days (aprox.)
-    = parseInt(course.timeToJoin() / 86400000);
+      form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
+        input(type='submit', value='I want to Learn!').btn
+  - else
+    p.no-purchase This course is no longer available
 
-p.course-description= course.description
+  - if (course.purchasedBy(user, learners))
+    p.already-purchased You have enrolled in this course.
+    - if (course.inFlight(learners))
+      span.awards-call-to-action
+        a(href="/courses/#{course.permalink}/awards/new").award Reward your most helpful coursemates!
 
-- if (learners.length > 0)
-  h3.learners-participating Learners
-  ul
-    - learners.forEach(function(learner) {
-      li
-       learner-name= learner.name
-    - })
-  
-- if (course.inFlight(learners))
-  h3.awards-call-to-action
-    | Are you a member of this course?
-    a(href="/courses/#{course.permalink}/awards/new").award Reward your most helpful coursemates!
+  h3.description-label Course Description
+  span.course-description= course.description
+
+  - if (learners.length > 0)
+    h3.learners-participating Learners
+    ul
+      - learners.forEach(function(learner) {
+        li
+         learner-name= learner.name
+      - })
+    

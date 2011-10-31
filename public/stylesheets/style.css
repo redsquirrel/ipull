@@ -245,7 +245,7 @@ label {
 }
 
 input, textarea, select {
-  margin-left: 100px;
+  margin-left: 20px;
   margin-top: 6px;
   border: 1px solid #CCCCCC;
   border-radius: 3px 3px 3px 3px;
