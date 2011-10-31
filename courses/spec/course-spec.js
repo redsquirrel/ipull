@@ -2,6 +2,9 @@ var assert = require('assert');
 var vows = require('vows');
 var Course = require('../course');
 
+var augustFirst2011 = 'Mon, 01 Aug 2011 05:00:00 GMT'
+    julySixteenth2011 = 1310850939659;
+
 vows.describe('course').addBatch({
   learnersNeeded: {
     topic: function() {
@@ -42,12 +45,11 @@ vows.describe('course').addBatch({
   timeToJoin: {
     topic: function() {
       var course = new Course();
-      var augustFirst2011 = 1312174800000;
       course["decision-date"] = augustFirst2011;
       return course;
     },
     "subtracts now from the decision date": function(course) {
-      var now = 1310850939659; // aka July 16, 2011
+      var now = julySixteenth2011;
       assert.equal(course.timeToJoin(now), 1323860341);
     }
   }
@@ -56,25 +58,23 @@ vows.describe('course').addBatch({
     topic: function() {
       var course = new Course();
       course["min-learners"] = 1;
-      var augustFirst2011 = 1312174800000;
       course["start-date"] = augustFirst2011;
       return course;
     },
     "if we have enough people and the course has started": function(course) {
       var now = 1312320183992; // aka August 2, 2011
       var learners = [{id: 80, name: "Dave"}];
-      assert.ok(course.inFlight(learners, now));
+      assert.isTrue(course.inFlight(learners, now));
     }
   } ,
   purchasableBy: {
     topic: function() {
       var course = new Course();
-      var augustFirst2011 = 1312174800000;      
       course["decision-date"] = augustFirst2011;
       return course;
     },
     "is true if before decision date": function(course) {
-      var now = 1310850939659; // aka July 16, 2011
+      var now = julySixteenth2011; 
       assert.ok(course.purchasableBy(null, [], now));
     },
     "is false if after decision date": function(course) {
@@ -82,13 +82,13 @@ vows.describe('course').addBatch({
       assert.equal(course.purchasableBy(null, [], now), false);
     },
     "is false if learner has already joined": function(course) {
-      var now = 1310850939659; // aka July 16, 2011
+      var now = julySixteenth2011; 
       var learner = {username: "dave"};
       var learners = [{username: "staci"}, {username: "dave"}];
       assert.equal(course.purchasableBy(learner, learners, now), false);
     },
     "is true if learner hasn't joined yet": function(course) {
-      var now = 1310850939659; // aka July 16, 2011
+      var now = julySixteenth2011; 
       var learner = {username: "dave"};
       var learners = [{username: "staci"}, {username: "charlie"}];
       assert.ok(course.purchasableBy(learner, learners, now));

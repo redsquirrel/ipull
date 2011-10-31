@@ -28,7 +28,7 @@ module.exports = Course = function(id) {
   }
   
   this.inFlight = function(learners, now) {
-    return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
+    return (new Date(this["start-date"]) - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
   };
   
   function currentEpochTime(now) {
