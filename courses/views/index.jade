@@ -2,8 +2,14 @@ h1= title
 
 a(href="/courses/new").course-new Create your own Course
 
-ul.course-list
+table.courses-list
   - courses.forEach(function(course) {
-    li
-     a(href="/courses/#{course.permalink}").course-name= course.name
+    tr
+      td
+        a(href="/courses/#{course.permalink}").course-name= course.name
+      td
+        span.course-description= course.description
+      td
+        a(href="/courses/#{course.permalink}/edit") Edit
+        
   - })

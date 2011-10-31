@@ -1,5 +1,6 @@
 var express = require('express');
 var redis = require('redis');
+var logger = require('./loggers');
 
 var app = module.exports = express.createServer();
 
