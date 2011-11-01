@@ -5,8 +5,16 @@ module.exports = Course = function(id) {
     return this["min-learners"] - learners.length;
   };
   
+  this.learnersSeatsAvailable = function(learners) {
+    return this["max-learners"] - learners.length;
+  };
+
+  this.learnersMaxed = function(learners) {
+    return this["max-learners"] <= learners.length;
+  };
+
   this.timeToJoin = function(now) {
-    return this["decision-date"] - currentEpochTime(now);
+    return (new Date(this["decision-date"] )) - currentEpochTime(now);
   };
   
   this.purchasableBy = function(learner, learners, now) {
@@ -20,7 +28,7 @@ module.exports = Course = function(id) {
   }
   
   this.inFlight = function(learners, now) {
-    return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
+    return (new Date(this["start-date"]) - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
   };
   
   function currentEpochTime(now) {
