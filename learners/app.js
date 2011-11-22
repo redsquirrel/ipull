@@ -114,7 +114,6 @@ var port, redisConnect;
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   port = 3000;
-  
   redisConnect = redis.createClient;  
 });
 

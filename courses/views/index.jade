@@ -1,15 +1,16 @@
 h1= title
 
-a(href="/courses/new").course-new Create your own Course
-
-table.courses-list
-  - courses.forEach(function(course) {
-    tr
-      td
-        a(href="/courses/#{course.permalink}").course-name= course.name
-      td
-        span.course-description= course.description
-      td
-        a(href="/courses/#{course.permalink}/edit") Edit
-        
-  - })
+div.row
+  div.span-4.well
+    a(href="/courses/new").course-new.btn.large.primary Create your own Course
+  div.span-12
+    table.courses-list
+      - courses.forEach(function(course) {
+        tr
+          td
+            a(href="/courses/#{course.permalink}").course-name= course.name
+          td
+            span.course-description= course.description
+          td
+            a(href="/courses/#{course.permalink}/edit") Edit
+      - })
