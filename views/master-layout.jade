@@ -15,36 +15,32 @@ html(class='no-js', lang='en')
     //-meta(name="description", content=description)
     //-meta(name="author", content=author)
     meta(name="viewport", content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/960.css')
+    link(rel="stylesheet", href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css")
     script(src='/js/libs/modernizr-2.0.6.min.js')
     script(src='http://static.ak.fbcdn.net/connect/en_US/core.js')
-  body
-    #container.container_16
-      #logo.grid_3
-        img(src="/img/ipullLogo.png");
-      nav#main-nav.grid_6
-        ul
-          li
-            a(href='/courses') courses
-          li
-            a(href='/#') News
-          li
-            a(href='/#') Help
-      nav#user-nav.grid_7
-        ul
-          - if (everyauth.loggedIn)
-            li
-            | Hi #{user.name}, 
-            li
-              a(href='/profile/new') profile |
-            li
-              a(href='/logout') Logout
-          - else
-            p You are not logged in
-            a(href='/').login-link Log In
-            div.clear
-      section#content.grid_16!= body
+  body(style="padding:40px;")
+    .container-fluid
+      div.topbar
+        div.topbar-inner
+          div.container-fluid
+            a.brand IPull
+            ul
+              li
+                a(href='/courses') Courses
+              li
+                a(href='/#') News
+              li
+                a(href='/#') Help
+              - if (everyauth.loggedIn)
+                li
+                  a(href='/profile/new')#{user.name}'s  profile
+                li
+                  a(href='/logout') Logout
+              - else
+                li
+                  a(href='/').login-link Log In
+
+      != body
 
       div.clear
       footer.grid_16
