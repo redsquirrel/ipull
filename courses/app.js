@@ -17,18 +17,6 @@ app.setupLearners = function(l) {
   learners = l;
 }
 
-function allowForMissingEveryauth(req, res, next) {
-  if (!everyauth) {
-    req.loggedIn = true;
-    app.helpers({
-      user: {name: "Joe Example", id: 53},
-      everyauth: {loggedIn: true}
-    });
-  }
-  next();
-}
-app.use(allowForMissingEveryauth);
-
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');

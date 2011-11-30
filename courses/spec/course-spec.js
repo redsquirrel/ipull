@@ -2,7 +2,7 @@ var assert = require('assert');
 var vows = require('vows');
 var Course = require('../course');
 
-var augustFirst2011 = 'Mon, 01 Aug 2011 05:00:00 GMT'
+var augustFirst2011 = 1312174800000,
     julySixteenth2011 = 1310850939659;
 
 vows.describe('course').addBatch({

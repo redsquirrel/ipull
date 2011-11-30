@@ -24,12 +24,14 @@ module.exports = Courses = function(redis, namespace) {
   RedisModel.call(this, redis, namespace);
   var n = require("../redis-util").namespaced(namespace);
   
-  this.allByLearnerId = function(learnerId, callback) {
-    this.all("learners:"+learnerId+":course-ids-by-name", callback);
+  var fn = this; // create alias so we don't have to bind context to functions
+  
+  fn.allByLearnerId = function(learnerId, callback) {
+    fn.all("learners:"+learnerId+":course-ids-by-name", callback);
   };
   
-  this.addLearnerToCourse = function(learnerId, permalink, callback) {
-    this.findByPermalink(permalink, function(error, course) {
+  fn.addLearnerToCourse = function(learnerId, permalink, callback) {
+    fn.findByPermalink(permalink, function(error, course) {
       if (error) return callback(error);
       var multi = redis.multi();
       multi.sadd(n("courses:"+course.id+":learners"), learnerId);
@@ -42,14 +44,14 @@ module.exports = Courses = function(redis, namespace) {
     });
   };
   
-  this.memberOfCourse = function(learnerId, permalink, callback) {
-    this.findByPermalink(permalink, function(error, course) {
+  fn.memberOfCourse = function(learnerId, permalink, callback) {
+    fn.findByPermalink(permalink, function(error, course) {
       if (error) return callback(error);
       redis.sismember(n("courses:"+course.id+":learners"), learnerId, callback);
     });
   };
   
-  this.all = function(/* sortedListKey?, callback */) {
+  fn.all = function(/* sortedListKey?, callback */) {
     var sortedListKey = arguments[1] ? arguments[0] : "course-ids-by-name";
     var callback = arguments[1] || arguments[0];
 
@@ -62,19 +64,19 @@ module.exports = Courses = function(redis, namespace) {
         keys.push(n("courses:"+courseId+":"+attribute));
       });
       redis.mget(keys, function(error, courseData) {
-        callback(error, this.hydrate(courseData, courseIds, allAttributes, Course));
-      }.bind(this));
-    }.bind(this));
+        callback(error, fn.hydrate(courseData, courseIds, allAttributes, Course));
+      });
+    });
   };
   
-  this.findByPermalink = function(permalink, callback) {
+  fn.findByPermalink = function(permalink, callback) {
     redis.hget(n("courses:permalinks:ids"), permalink, function(error, courseId) {
       if (error) return callback(error);
-      this.find(courseId, callback);
-    }.bind(this));
+      fn.find(courseId, callback);
+    });
   };
   
-  this.updateByPermalink = function(permalink, data, callback) {
+  fn.updateByPermalink = function(permalink, data, callback) {
     if (!data["updater-id"]) return callback({missing: "updater-id"});
     
     this.findByPermalink(permalink, function(error, course) {
@@ -82,9 +84,9 @@ module.exports = Courses = function(redis, namespace) {
         if (error) throw error;
         setAttributes(course.id, data);
         resetSortedCourseIds();
-        this.find(course.id, callback);
-      }.bind(this));
-    }.bind(this));
+        fn.find(course.id, callback);
+      });
+    });
   };
   
   this.create = function(data, callback) {
@@ -101,12 +103,12 @@ module.exports = Courses = function(redis, namespace) {
         redis.sadd(n("courses"), courseId);
         setAttributes(courseId, data);
         resetSortedCourseIds();
-        this.find(courseId, callback);
-      }.bind(this));
-    }.bind(this));
+        fn.find(courseId, callback);
+      });
+    });
   };
   
-  this.delete = function(courseId, callback) {
+  fn.delete = function(courseId, callback) {
     redis.srem(n("courses"), courseId, function(error) {
       resetSortedCourseIds(function(error) {
         redis.keys(n("courses:"+courseId+":*"), function(error, keys) {
@@ -117,12 +119,12 @@ module.exports = Courses = function(redis, namespace) {
     });
   };
 
-  this.deleteAll = function(callback) {
+  fn.deleteAll = function(callback) {
     redis.smembers(n("courses"), function(err, courseIds) {
       courseIds.forEach(function(courseId) {
-        this.delete(courseId);
-      }.bind(this));
-    }.bind(this));
+        fn.delete(courseId);
+      });
+    });
     var multi = redis.multi();
     multi.del(n("courses"));
     multi.del(n("course-ids-by-name"));
@@ -131,7 +133,7 @@ module.exports = Courses = function(redis, namespace) {
     multi.exec(callback);
   };
   
-  this.find = function(courseId, callback) {
+  fn.find = function(courseId, callback) {
     redis.sismember(n("courses"), courseId, function(error, courseExists) {
       if (error) return callback(error);
       
@@ -141,19 +143,19 @@ module.exports = Courses = function(redis, namespace) {
           keys.push(n("courses:"+courseId+":"+attribute));
         });        
         redis.mget(keys, function(error, courseData) {
-          var course = this.hydrate(courseData, [courseId], allAttributes, Course)[0];
+          var course = fn.hydrate(courseData, [courseId], allAttributes, Course)[0];
           callback(error, course);
-        }.bind(this));
+        });
       } else {
         callback();
       }
-    }.bind(this));
-  }.bind(this);
+    });
+  };
   
   var setPermalink = function(name, courseId, index, callback) {
     var suffix = index ? "-" + index : "";
     var permalink = seo.sluggify(name) + suffix;
-    this.findByPermalink(permalink, function(error, courseWithSameName) {
+    fn.findByPermalink(permalink, function(error, courseWithSameName) {
       if (error) return callback(error);
 
       if (courseWithSameName) {
@@ -164,7 +166,7 @@ module.exports = Courses = function(redis, namespace) {
         callback();
       }
     });
-  }.bind(this);
+  };
 
   function setAttributes(courseId, data) {
     // How to convert this to redis.mset(...) ???
