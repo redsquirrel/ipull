@@ -17,7 +17,7 @@ var safeAttributes = [
   "creator-id",
   "updater-id"
 ];
-var allAttributes = ["permalink"].concat(safeAttributes);
+var allAttributes = ["permalink", "updates"].concat(safeAttributes);
 var requiredAttributes = ["name", "creator-id", "decision-date", "start-date"];
 
 module.exports = Courses = function(redis, namespace) {
@@ -111,8 +111,8 @@ module.exports = Courses = function(redis, namespace) {
   fn.delete = function(courseId, callback) {
     redis.srem(n("courses"), courseId, function(error) {
       resetSortedCourseIds(function(error) {
-        redis.keys(n("courses:"+courseId+":*"), function(error, keys) {
-          redis.del(keys);
+        allAttributes.forEach(function(attribute) {
+          redis.del(n("courses:"+courseId+":"+attribute));
         });
         if (callback) callback();
       });
@@ -169,17 +169,18 @@ module.exports = Courses = function(redis, namespace) {
   };
 
   function setAttributes(courseId, data) {
-    // How to convert this to redis.mset(...) ???
-    var multi = redis.multi();
+    var toUpdate = [];
     for (var attribute in data) {
       if (safeAttributes.indexOf(attribute) >= 0) {
-        multi.set(n("courses:"+courseId+":"+attribute), data[attribute]);
+        toUpdate.push(n("courses:"+courseId+":"+attribute));
+        toUpdate.push(data[attribute]);
       }
     }
     if (data.name) {
-      multi.set(n("courses:"+courseId+":name:lower"), data.name.toLowerCase());
+      toUpdate.push(n("courses:"+courseId+":name:lower"));
+      toUpdate.push(data.name.toLowerCase());
     }
-    multi.exec();
+    redis.mset(toUpdate);
   };
 
   function resetSortedCourseIds(/* readSetKey?, storeListKey?, callback? */) {

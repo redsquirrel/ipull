@@ -154,8 +154,6 @@ app.get('/profile/new', auth.protect, function(req, res){
   res.render("new-profile", {title: "Please tell us about yourself"});
 });
 
-//TODO This redirect only happens after a /profile/new. If called on bar it defaults to
-//Don't understand how routing works with two 'main' apps --- is this standard express?
 app.post('/profile', auth.protect, function(req, res) {
   learners.setUsername(req.user.id, req.body.username, function() {
     res.render("profile", {title: "Your Profile"});
