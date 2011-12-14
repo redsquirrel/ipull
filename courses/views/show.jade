@@ -21,7 +21,7 @@ div.course-image
           
       p.time-left
         | Time left to join in Days (aprox.)
-        = parseInt(course.timeToJoin() / 86400000);
+        = parseInt(course.daysToJoin());
 
       form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
         input(type='submit', value='I want to Learn!').btn

@@ -171,11 +171,13 @@ module.exports = Courses = function(redis, namespace) {
   function setAttributes(courseId, data) {
     var toUpdate = [];
     for (var attribute in data) {
+      var value = typecastAttribute(attribute, data[attribute]);
       if (safeAttributes.indexOf(attribute) >= 0) {
         toUpdate.push(n("courses:"+courseId+":"+attribute));
-        toUpdate.push(data[attribute]);
+        toUpdate.push(value);
       }
     }
+    
     if (data.name) {
       toUpdate.push(n("courses:"+courseId+":name:lower"));
       toUpdate.push(data.name.toLowerCase());
@@ -209,6 +211,18 @@ module.exports = Courses = function(redis, namespace) {
       n("courses:"+courseId+":learner-ids-by-name"), // used in learners.js
       callback || function(){/*no-op*/}
     );
+  }
+  
+  function typecastAttribute(attributeName, value) {
+    var newValue = value;
+    if (attributeIsDate(attributeName)) {
+      newValue = new Date(value).getTime() / 1000;
+    }
+    return newValue;
+  }
+  
+  function attributeIsDate(attributeName) {
+    return /\-date$/.test(attributeName);
   }
 
 }

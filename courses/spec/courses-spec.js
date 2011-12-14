@@ -143,8 +143,8 @@ vows.describe('courses').addBatch(setupBatch({
   ,
   create: {
     topic: function(courses) {
-      courses.create({name: "Social Psychology", "creator-id": 53, "decision-date": 1, "start-date": 1}, function(err, course) {
-        this.callback(null, {courses: courses, course: course});
+      courses.create({name: "Social Psychology", "creator-id": 53, "decision-date": "August 1, 2011", "start-date": "September 1, 2011"}, function(err, course) {
+        this.callback(err, {courses: courses, course: course});
       }.bind(this));
     },
     'adds another awesome course': {
@@ -161,6 +161,10 @@ vows.describe('courses').addBatch(setupBatch({
       },
       "stores the learner's id": function(topic) {
         assert.equal(topic.course["creator-id"], 53);
+      },
+      'stores the dates as integers': function(topic) {
+        assert.equal(topic.course["decision-date"], "1312174800");
+        assert.equal(topic.course["start-date"],    "1314853200");
       }
     }
   }

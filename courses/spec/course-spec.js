@@ -42,7 +42,7 @@ vows.describe('course').addBatch({
     }
   }
   ,
-  timeToJoin: {
+  daysToJoin: {
     topic: function() {
       var course = new Course();
       course["decision-date"] = augustFirst2011;
@@ -50,7 +50,7 @@ vows.describe('course').addBatch({
     },
     "subtracts now from the decision date": function(course) {
       var now = julySixteenth2011;
-      assert.equal(course.timeToJoin(now), 1323860341);
+      assert.equal(course.daysToJoin(now), 15);
     }
   }
   ,

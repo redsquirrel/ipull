@@ -13,12 +13,12 @@ module.exports = Course = function(id) {
     return this["max-learners"] <= learners.length;
   };
 
-  this.timeToJoin = function(now) {
-    return (new Date(this["decision-date"] )) - currentEpochTime(now);
+  this.daysToJoin = function(now) {
+    return Math.round((this["decision-date"] - currentEpochTime(now)) / (24*60*60*1000));
   };
   
   this.purchasableBy = function(learner, learners, now) {
-    if (this.timeToJoin(now) < 0) return false;
+    if (this.daysToJoin(now) < 0) return false;
     return !this.purchasedBy(learner, learners);
   }
   
@@ -28,7 +28,7 @@ module.exports = Course = function(id) {
   }
   
   this.inFlight = function(learners, now) {
-    return (new Date(this["start-date"]) - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
+    return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
   };
   
   function currentEpochTime(now) {
