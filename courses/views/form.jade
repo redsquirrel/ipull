@@ -32,13 +32,13 @@ div.row
       legend Important Dates [use MM/DD/YYYY format]
       .clearfix
         label(for="course-decision-date") Decision date
-        input(type="text", name="decision-date", id="course-decision-date", value=course['decision-date'])
+        input(type="text", name="decision-date", id="course-decision-date", value=course.date('decision-date'))
       .clearfix
         label(for="course-start-date") Start date
-        input(type="text", name="start-date", id="course-start-date", value=course['start-date'])
+        input(type="text", name="start-date", id="course-start-date", value=course.date('start-date'))
       .clearfix
         label(for="course-end-date") End date
-        input(type="text", name="end-date", id="course-end-date", value=course['end-date'])
+        input(type="text", name="end-date", id="course-end-date", value=course.date('end-date'))
 div.actions
   input(type="submit", value="Save").btn.primary
   input(type="reset", value="Cancel").btn

@@ -31,7 +31,19 @@ module.exports = Course = function(id) {
     return (this["start-date"] - currentEpochTime(now) <= 0) && (this.learnersNeeded(learners) <= 0);
   };
   
+  this.date = function(attribute) {
+		if (!this[attribute]) return "";
+		
+		var date = new Date(this[attribute] * 1000);
+		var mm = date.getMonth()+1;
+		if (mm < 10) mm = "0"+mm;
+		var dd = date.getDate();
+		if (dd < 10) dd = "0"+dd;
+		var yyyy = date.getFullYear();
+		return mm + "/" + dd + "/" + yyyy;
+  };
+  
   function currentEpochTime(now) {
-    return now || new Date().getTime();
+    return now || new Date().getTime() / 1000;
   }
 }

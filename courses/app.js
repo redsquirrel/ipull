@@ -81,7 +81,7 @@ function membersOnly(req, res, next) {
 }
 
 app.get('/courses/new', auth.protect, function(req, res) {
-  res.render("new", {title: "Create Your Course", course: {}});
+  res.render("new", {title: "Create Your Course", course: new Course()});
 });
 
 app.post('/courses', auth.protect, function(req, res) {

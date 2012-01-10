@@ -25,14 +25,15 @@ div.course-image
 
       form(action="/learning/#{course.permalink}", id="participation-form", method="POST")
         input(type='submit', value='I want to Learn!').btn
-  - else
-    p.no-purchase This course is no longer available
 
-  - if (course.purchasedBy(user, learners))
-    p.already-purchased You have enrolled in this course.
+  - else if (course.purchasedBy(user, learners))
+    p.already-purchased You are enrolled in this course!
     - if (course.inFlight(learners))
       span.awards-call-to-action
         a(href="/courses/#{course.permalink}/awards/new").award Reward your most helpful coursemates!
+  - else
+    p.no-purchase This course is no longer available
+
 
   h3.description-label Course Description
   span.course-description= course.description

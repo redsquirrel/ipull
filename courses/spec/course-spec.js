@@ -111,4 +111,18 @@ vows.describe('course').addBatch({
       assert.equal(course.purchasedBy(learner, learners), false);
     }
   }
+  ,
+  date: {
+    topic: function() {
+			return new Course()
+		},
+    "converts integers into MM/DD/YYYY": function(course) {
+      course["decision-date"] = 1349067600;
+      assert.equal(course.date("decision-date"), "10/01/2012");
+    },
+		"plays nice when there is no date data": function(course) {
+      course["decision-date"] = undefined;
+      assert.equal(course.date("decision-date"), "");
+		} 
+  }
 }).export(module);
