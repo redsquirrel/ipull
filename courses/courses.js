@@ -216,7 +216,7 @@ module.exports = Courses = function(redis, namespace) {
   function typecastAttribute(attributeName, value) {
     var newValue = value;
     if (attributeIsDate(attributeName)) {
-      newValue = new Date(value).getTime() / 1000;
+      newValue = Date.parse(value) / 1000;
     }
     return newValue;
   }
