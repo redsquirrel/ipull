@@ -9,7 +9,7 @@ This experiment is meant to explore one of many possible alternatives.
 
 iPull is a platform for courses to be proposed by the people interested in learning about a specific subject. A motivated learner sets up a course, choosing the price, class size range, dates, times, duration, and creates an initial description. The learner then commits to paying the price for the course if a minimum number of learners also commit to pay and participate. Once the course begins, the learners are charged the price. At the conclusion of the course, the learners will be able to award iPull credits for the money they paid for the course to any of the other learners in the course. In this way, if there are some oustanding teachers or learning facilitators in a group, they will be rewarded for their skills and effort. They will also gain prestige in the iPull community because all awards are published.
 
-For example, let's say a course cost $100 and there were 10 learners who participated. At the conclusion of the course, the learner would have the option to:
+For example, let's say a course costs $100 and there were 10 learners who participated. At the conclusion of the course, the learner would have the option to:
 
 * Do nothing, and iPull would use that money for operations.
 * Take all $100 and give it to one of the other learners, implying that this person was exceptionally helpful to the learner.
