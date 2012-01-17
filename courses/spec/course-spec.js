@@ -2,8 +2,8 @@ var assert = require('assert');
 var vows = require('vows');
 var Course = require('../course');
 
-var augustFirst2011 = 1312174800000,
-    julySixteenth2011 = 1310850939659;
+var augustFirst2011 = 1312174800,
+    julySixteenth2011 = 1310850939;
 
 vows.describe('course').addBatch({
   learnersNeeded: {
@@ -62,7 +62,7 @@ vows.describe('course').addBatch({
       return course;
     },
     "if we have enough people and the course has started": function(course) {
-      var now = 1312320183992; // aka August 2, 2011
+      var now = 1312320183; // aka August 2, 2011
       var learners = [{id: 80, name: "Dave"}];
       assert.isTrue(course.inFlight(learners, now));
     }
@@ -78,7 +78,7 @@ vows.describe('course').addBatch({
       assert.ok(course.purchasableBy(null, [], now));
     },
     "is false if after decision date": function(course) {
-      var now = 1315313726000; // aka September 6, 2011
+      var now = 1315313726; // aka September 6, 2011
       assert.equal(course.purchasableBy(null, [], now), false);
     },
     "is false if learner has already joined": function(course) {
@@ -120,9 +120,9 @@ vows.describe('course').addBatch({
       course["decision-date"] = 1349067600;
       assert.equal(course.date("decision-date"), "10/01/2012");
     },
-		"plays nice when there is no date data": function(course) {
+    "plays nice when there is no date data": function(course) {
       course["decision-date"] = undefined;
       assert.equal(course.date("decision-date"), "");
-		} 
+	  } 
   }
 }).export(module);
