@@ -117,7 +117,7 @@ app.get('/courses/:permalink/awards/new', auth.protect, membersOnly, function(re
 });
 
 app.post('/courses/:permalink/awards', auth.protect, membersOnly, function(req, res) {
-  res.send('Right here. Now we give someone an award.');
+  res.send('Right here. Now we give someone an award.'); // todo
 });
 
 app.get('/learning', auth.protect, function(req, res) {
@@ -138,6 +138,13 @@ app.get('/courses', function(_, res) {
   courses.all(function(err, courseData) {
     if (err) throw err;
     res.render('index', {courses: courseData, title: "Courses"});
+  });
+});
+
+app.get('/courses.json', function(_, res) {
+  courses.all(function(err, courseData) {
+    if (err) throw err;
+    res.send(JSON.stringify(courseData));
   });
 });
 
