@@ -1,42 +1,40 @@
 div.row
-  div.span-4
+  div.span4
     fieldset
       legend Course Form
-      .clearfix
         label(for="course-name") Name
         input(type="text", name="name", id="course-name", value=course.name)
-      .clearfix
+
         label(for="course-price") Price
-        input(type="text", name="price", id="course-price",
-        value=course.price)
-      .clearfix
+        input(type="text", name="price", id="course-price", value=course.price)
+
         label(for="course-location") Location
         input(type="text", name="location", id="course-location", value=course.location)
-      .clearfix
+
         label(for="course-summary") Summary
         textarea(name="summary", id="course-summary", rows="3", cols="30").large= course.summary
-      .clearfix
+
         label(for="course-description") Description
         textarea(name="description", id="course-description", rows="6", cols="30").large= course.description
-  div.span-4
+  div.span4
     fieldset
       legend Learners
-      .clearfix
+      
         label(for="course-min-learners") min
         input(type="text", name="min-learners", id="course-min-learners", value=course['min-learners'])
-      .clearfix
+      
         label(for="course-max-learners") max
         input(type="text", name="max-learners", id="course-max-learners", value=course['max-learners'])
-  div.span-4
+  div.span4
     fieldset
       legend Important Dates [use MM/DD/YYYY format]
-      .clearfix
+      
         label(for="course-decision-date") Decision date
         input(type="text", name="decision-date", id="course-decision-date", value=course.date('decision-date'))
-      .clearfix
+      
         label(for="course-start-date") Start date
         input(type="text", name="start-date", id="course-start-date", value=course.date('start-date'))
-      .clearfix
+      
         label(for="course-end-date") End date
         input(type="text", name="end-date", id="course-end-date", value=course.date('end-date'))
 div.actions

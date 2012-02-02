@@ -3,8 +3,8 @@
 export SessionSecret=b4ds3cr3t;
 
 # https://dev.twitter.com/apps/...
-export TwitterConsumerKey=abcd3232dcba;
-export TwitterConsumerSecret=1234abcdefg4321;
+export TwitterConsumerKey=LQE2kHACve6cFvEhTEVFKg;
+export TwitterConsumerSecret=zmcv94Ld8LulF191JtCclhWdvpoJGAjRvVHmjgNnAfk;
 
 # https://developers.facebook.com/setup/done?id=...
 export FacebookAppId=123markz321;
