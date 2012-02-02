@@ -11,3 +11,8 @@
   background-color: #FFEBCD;
 }
 
+.billboard {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
