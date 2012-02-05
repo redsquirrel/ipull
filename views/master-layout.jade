@@ -63,12 +63,24 @@ html(class='no-js', lang='en')
     footer.container-fluid.modal-footer
       div.container
         .row
-          .span2
+          .span3
             | ipull brought to you by...
+            img(src='/img/brought_to_you_by.png')
           .span4
-            | Get involved
-          .span6
+            img(src='/img/get_involved.png')
+            ul.nav.nav-pills.footer-menu
+              li
+                a(href='/') Home
+              li
+                a(href='/') Courses
+              li
+                a(href='/') Help
+              li
+                a(href='/') About
+          .span5
             | Get in touch
+            img(src='/img/talk_to_us.png')
+            br
             a(href='https://github.com/redsquirrel/ipull/blob/master/Readme.markdown')
               | Learn more about this project
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js')
