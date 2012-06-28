@@ -26,8 +26,8 @@ I'm open to ideas, feedback, and collaboration.
 
 Dave Hoover, @redsquirrel, dave.hoover@gmail.com
 
-> "In a society which emphasizes teaching, children and students
-> - and adults - become passive and unable to think or act for
+> "In a society which emphasizes teaching, children and students -
+> and adults - become passive and unable to think or act for
 > themselves. Creative, active individuals can only grow up in
 > a society which emphasizes learning instead of teaching. ...
 > Instead of the lock-step of compulsory schooling in a fixed place,
