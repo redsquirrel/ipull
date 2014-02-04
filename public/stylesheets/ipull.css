@@ -1,0 +1,22 @@
+.offwhite {
+  background-color: #f7f7f7;
+}
+
+.inneroffwhite {
+  background-color: #fffafa;
+}
+
+.dev-login{
+  padding-top: 30px;
+  background-color: #FFEBCD;
+}
+
+.billboard {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer-menu {
+  text-align: center;
+}
